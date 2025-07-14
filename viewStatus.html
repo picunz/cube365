@@ -1,0 +1,199 @@
+                     
+ 
+     
+ 
+<div class="m-1" style="max-height: 100vh; overflow-y: auto;">
+ 
+    
+    <div class="card" style="background: linear-gradient(to right, #344968, #2a2c2e);">
+        <div class="card-header bg-primary">
+            <h2 class="text-center text-white"> Status</h2>
+        </div>
+
+        <div class="card-body card-detail" style="background-color:#2e3642;">
+<!-- 
+            <ul class="bar-graph"> 
+                
+                
+            </ul>
+               -->
+
+            <div id="StatusDiv"></div>
+        </div>
+    </div>
+
+
+    <a class="btn btn-primary btn-test" style="display:none;">Test</a>
+</div>
+
+
+
+<script>
+
+   
+
+    function getFiles()
+    {
+        fetch("./api/statistic.php?Action=GetFileStats&UserId=0")
+            .then(res => res.json())
+            .then(data => onGetFileStats(data));
+    }
+
+    function onGetFileStats(data)
+    {
+        console.log(data);
+       
+        var len = data.List.length;
+
+        var dateNowIdx = null;
+        for(var i = 0; i < len; i++) {
+
+            var filename = data.List[i];
+            var dateStr = filename.split('stats')[1].split('.txt')[0];
+
+            var fdate = convertStringDateDayToFormattedDate(dateStr);
+ 
+            if (fdate == new Date().toDateString())
+            {
+                dateNowIdx = i;
+            }
+
+            $('#maintable').bootstrapTable('insertRow', {
+                index: 0,
+                row: {
+                    date: fdate,
+                    filename: data.List[i],
+                    action: '<button class="btn btn-sm btn-primary">Modifica</button>'
+                }
+            });
+
+            var lastRow = $('#maintable').find('tbody tr').last(); // Ottieni l'ultima riga
+            lastRow.attr('data-id', dateNowIdx); 
+
+            
+
+            
+        }
+        if (dateNowIdx != null) {
+            startBlinkingRow(0);
+        }
+        
+    }
+
+
+    function getCurrentStatus(userId)
+    {
+        var fdata = new FormData();
+        fdata.append("Action", "GetList");
+        fdata.append("UserId", userId);
+        fdata.append("Table", "Status");
+
+        fetch("./dal/generic.php", { method:"post", body:fdata })
+            .then(res => res.json())
+            .then(data => onGetCurrentStatus(data)); 
+    }
+
+    function onGetCurrentStatus(data)
+    {
+        console.log(data);
+
+        var list = data.List;
+ 
+        if (list.length == 1) {
+
+            var side = list[0].Side;
+
+            // bar
+            $(".bar-graph").children().find('.bar-fill').removeClass('bg-success');
+            $(".bar-graph").children().eq(side).find('.bar-fill').addClass('bg-success');
+
+            // text
+            $(".bar-graph").children().find('.type').removeClass('typeSelected')
+            $(".bar-graph").children().eq(side).find('.type').addClass('typeSelected')
+           
+        }
+    }
+
+    $(document).ready(function() {
+
+        $(".link-home").show();
+ 
+        $('[data-toggle="tooltip"]').tooltip({html: true});
+
+        $('.modal').modal('hide');
+
+        $('#maintable').bootstrapTable();
+
+ 
+        var dateYYYYMMDD = convertDateToYYYYMMDD(new Date());
+        
+        var curFile = "stats" + dateYYYYMMDD + ".txt";
+
+        getFile(curFile);
+
+        // get status
+         
+
+        // continous refresh
+        
+        setInterval(function() {
+
+            getFile(curFile);
+            getCurrentStatus(0);
+
+            //console.log("datr");
+        }, 1000);
+        
+        
+    });
+
+
+    $(".fa-home").on('click', function() {
+ 
+        $('#maintable').bootstrapTable('destroy');
+        $("#md").remove();
+    });
+
+ 
+
+    function getFile(filename)
+    {
+        fetch("./api/statistic.php?Action=GetDailyStats&UserId=0&FileStats=" + filename)
+            .then(res => res.json())
+            .then(data => onGetDailyStats(data));
+    }
+
+    function onGetDailyStats(data)
+    {
+        console.log(data);
+
+        showDailyStats(data, $(".card-detail"));
+        
+    }
+
+    $(".btn-test").on('click', function() {
+
+        var fdata = new FormData();
+        fdata.append("Action", "UpdateStatus");
+        fdata.append("UserId", 0);
+        fdata.append("Side", 0);
+        
+        fetch("./dal/status.php", { method:"post", body:fdata })
+            .then(res => res.json())
+            .then(data => onUpdateStatus(data));
+    });
+    
+    function onUpdateStatus(data)
+    {
+        debugger
+        console.log(data);
+    }
+ 
+    
+         
+</script>
+      
+       
+     
+    
+    

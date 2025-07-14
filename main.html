@@ -1,0 +1,143 @@
+<head>
+    <link rel="stylesheet" href="css/neuromorphic.css">
+</head>
+<style>
+
+      
+
+</style>
+
+<div class='container'>
+ 
+    <!-- <button id="btn-configure" class="my-2">Configura Task</button>
+    <br>
+    <button id="btn-archive" class="my-3">Archivio</button>
+ -->
+    <div class="containerNM">
+        <div class="tabs">
+            <div class="">
+                <input type="radio" id="radio-1" name="tabs" checked />
+                <label class="tab" for="radio-1">Archivio <!-- <span class="notification">2</span> --></label>
+            </div>
+            <div class="">
+                <input type="radio" id="radio-2" name="tabs" />
+                <label class="tab" for="radio-2">Configurazione</label>
+            </div>
+            
+            <span class="glider"></span>
+        </div>
+    </div>
+
+   
+
+ 
+</div>
+
+
+
+<script>
+
+    $(document).ready(function(){
+
+        console.log('ready main.html');
+        _sidebarActive = true;
+
+        $(".containerNM").appendTo(".container-fluid");
+
+        resetMainClass();
+        $(".app-main").addClass('mainBackground');
+
+        
+ 
+
+        var miniScreen = window.matchMedia("(max-width: 375px)").matches;
+
+        var innerWidth = window.innerWidth;
+        var screenWidth = screen.width;
+
+        console.log("miniscreen 375:" + miniScreen);
+        console.log("innerWidth:" + innerWidth);
+        console.log("screenWidth:" + screenWidth);
+        
+
+        // only for mobile
+        if (localStorage["OS"] != undefined && localStorage["OS"] != 'unknown') {
+            setTimeout(function(){
+
+                
+                if (false) {
+                    $(".mainBackground").addClass('mainBackgroundMoveMini');
+                }
+                else {
+                    $(".mainBackground").addClass('mainBackgroundMove');
+                }
+                  
+
+            }, 500);
+        }
+
+        
+        
+
+        //$('.mainBackground').css('background-position', '-800px');
+
+        
+
+        $(".link-home").hide();
+
+
+        $("#menu-link").show();
+
+        //localStorage.removeItem('sidebar-collapse'); // Cancella lo stato salvato
+        //document.body.classList.add('sidebar-collapse'); // Forza la sidebar collassata
+ 
+        // show link home
+
+        $(".app-main").load("./viewArchive.html");
+    });
+    
+
+     
+
+    $("#btn-configure").on('click', function() {
+        console.log("insert score");
+
+        $(".app-main").load("./viewConfigure.html");
+    });
+
+    $("#btn-archive").on('click', function() {
+        console.log("archive");
+
+        $(".app-main").load("./viewArchive.html");
+    });
+
+      
+
+    // detect OS and prepare install dialog
+    var OS = getMobileOperatingSystem();
+    console.warn("OS: " + OS); 
+    localStorage["OS"] = OS;
+ 
+    //$("#installAppLink").hide();
+    //localStorage["InstalledApp"] = true;
+
+    var isIos = OS.indexOf("iOS") >= 0;
+    var ua = navigator.userAgent;
+    var isSafari = !ua.match(/CriOS/) && !ua.match(/FxiOS/) && !ua.match(/OPiOS/) && !ua.match(/mercury/);
+
+    if (isIos)
+    {
+        if (isSafari){
+            $('#a2hs .ios-safari').show();
+        } else {
+            $('#a2hs .ios-not-safari').show();
+        }
+
+        $('#install').show();
+    }
+    else 
+    {
+        $('#a2hs .android').show();
+    }
+
+</script>

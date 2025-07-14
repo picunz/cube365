@@ -1,0 +1,70 @@
+ 
+ 
+    <img src ='imgs/account_red.png' class="mx-auto" style="width:300px;">
+
+     
+     
+   
+    <form>
+        <div class="form-floating mb-3">
+            <input type="number" class="form-control" id="Code" placeholder="">
+            <label for="Code">Codice</label>
+        </div>
+    </form>      
+    
+    <a class="btn btn-danger btn-send-authenticate col-md-3 mx-auto">Invia</a>
+
+    <div class="box-resend-code mx-auto d-none">
+        <span class="" style="font-size: 25px;text-shadow:-1px 2px 4px #86b7fe;cursor:pointer;">Reinvio codice</span>
+     </div> 
+    
+    <script>
+
+       
+        $(".btn-send-authenticate").on('click', function() {
+
+            let code = $("#Code").val();
+            if (code.length < 4 || code.length > 4) {
+
+                showToastMessage("Codice non valido", "error");
+
+                $('.box-resend-code').toggleClass('d-none d-block');
+                return;
+            }
+              
+            let email = localStorage["LoginEmail"];
+ 
+            var data = new FormData();
+            data.append("Action", "AuthenticateUser");
+            data.append("code", code);
+            data.append("email", email);
+
+            fetch("./dal/users.php", { method:"post", body:data })
+                .then(res => res.json())
+                .then(data => onAuthenticateUser(data));
+                //.catch(err => console.warn(err));
+        });
+
+        function onAuthenticateUser(data)
+        {
+            console.log(data);
+ 
+            if (data.Result && data.Verified == "TRUE") {
+
+                showToastMessage("Autenticazione effettuata con successo", "success");
+
+                localStorage["LoginStatus"] = "UserAuthenticated";
+
+                $(".app-main").load("./adminlte/helpers/loginPage.html");
+            }
+            else {
+                showToastMessage("Codice errato", "error");
+
+                $('.box-resend-code').toggleClass('d-none d-block');
+            }
+        }
+        
+    </script>
+    
+
+</body>

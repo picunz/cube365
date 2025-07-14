@@ -1,0 +1,62 @@
+ 
+<!-- Button trigger modal -->
+<button type="button" id="startModal" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    
+</button>
+  
+<!-- Modal -->
+ 
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ...
+            </div>
+            <div class="modal-footer">
+               
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+            </div>
+        </div>
+    </div>
+</div>
+ 
+
+<script>
+
+    function setModalTitle(title)
+    {
+        $('.modal-title').text(title);
+    }
+
+    function setHeaderClass(cls)
+    {
+        $('.modal-header').addClass(cls);
+        //$('.modal-header .btn-close').addClass('text-white');
+    }
+
+    function setRaceId(id)
+    {
+        $(document).find(".modal").attr("raceId", id);
+    }
+
+    $(document).ready(function () {
+       
+        $("#startModal").click();
+
+        $("#startModal").hide();
+
+        /* $("#exampleModal").show(); */
+        
+        
+    });
+
+    $('.modal').on('hidden.bs.modal', function () {
+         
+        $(".modal").modal('hide');
+        $("#md").remove();
+    });
+</script>

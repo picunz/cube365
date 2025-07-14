@@ -1,0 +1,10 @@
+{
+    "name": "vendor/project",
+    "description": "My project",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.4",
+        "monolog/monolog": "^2.0",
+        "aws/aws-sdk-php": "^3.342"
+    }
+}

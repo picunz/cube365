@@ -1,0 +1,375 @@
+                     
+<head>
+    <link rel="stylesheet" href="css/neuromorphic.css">
+</head>
+
+<style>
+
+    .table-hover > tbody > tr:hover > *
+    {
+        --bs-table-color-state: white;
+        --bs-table-bg-state: #0d6efd4f;
+    }
+
+     
+        
+    thead tr th {
+        
+        background-color: var(--bs-bicistore-color) !important;
+        /* color:white !important; */
+    }
+    
+    
+
+    .blinking {
+        animation: blink 1s infinite; /* Imposta il lampeggio ogni 1 secondo */
+    }
+
+    @keyframes blink {
+        0% { background-color: #f8d7da; }
+        50% { background-color: #f5c6cb; }
+        100% { background-color: #f8d7da; }
+    }
+
+    .bootstrap-table .detail-view td {
+        background-color: #a83841 !important; 
+        color: #721c24 !important; 
+    }
+ 
+    /* tr.detail-view td:hover {
+        background-color: #a83841 !important;
+    } */
+</style>
+     
+
+         
+<div id="toolbar"  class="btn-group float-right">
+ 
+</div>
+
+<div class="m-2" style="max-height: 100vh;">
+ 
+    
+    <div>
+        <h1 class="text-white">Cube Emulator</h1>
+        <div class="row">
+            <a class="btn btn-success btn-send-face col-1 m-1" face="LEFT">LEFT</a>
+            <a class="btn btn-success btn-send-face col-1 m-1" face="RIGHT">RIGHT</a>
+            <a class="btn btn-success btn-send-face col-1 m-1" face="FRONT">FRONT</a>
+            <a class="btn btn-success btn-send-face col-1 m-1" face="BACK">BACK</a>
+            <a class="btn btn-success btn-send-face col-1 m-1" face="BASE">BASE</a>
+            <a class="btn btn-success btn-send-face col-1 m-1" face="TOP">TOP</a>
+        </div>
+        <div class="row">
+            <a class="btn btn-primary btn-send-face col-1 m-1" face="MULTIPLE_SIDE">MULTIPLE_SIDE</a>
+            <a class="btn btn-primary btn-send-face col-1 m-1" face="NO_SIDE">NO_SIDE</a>
+        </div>
+        <div class="row">
+            <a class="btn btn-primary btn-send-getactivities col-1 m-1" face="-">GetActivities</a>
+        </div>
+    </div>
+
+    <h1 class="mb-4"></h1>
+    <table 
+        id="maintable"
+        data-toggle="table"
+        data-search="true"
+        data-pagination="true"
+        data-sortable="true"
+        data-detail-view="true"
+        data-detail-icon-open="fa fa-plus"
+        data-detail-icon-close="fa fa-minus"
+        data-detail-formatter="detailFormatter"
+        data-sort-name="Date"
+        data-sort-order="desc"
+        class="table table-bordered">
+        <thead class="bg-primary">
+            <tr>
+                <th data-field="Date" data-sortable="true">Data</th>
+                <th data-field="Created" data-sortable="true">Creato il</th>
+                <th data-field="LastUpdate" data-sortable="true">Aggiornato il</th>
+                
+                <th data-field="Actions" data-sortable="false" data-formatter="formatActions" data-cell-style="styleActions"></th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+<script>
+        
+    function formatActions(value, row, index) 
+    { 
+       return `<button class="btn btn-sm btn-primary btn-show-excel">Apri excel</button>
+               <button class="btn btn-sm btn-success btn-convert-excel">Excel</button>`;
+    }
+
+    function detailFormatter(index, row) 
+    {
+  
+        return showDailyStats(row.Activities);
+    }
+
+    
+    function getActivities()
+    {
+        /*
+        fetch("./api/statistic.php?Action=GetFileStats&UserId=0")
+            .then(res => res.json())
+            .then(data => onGetActivities(data));
+        */
+         
+        var data = new FormData();
+        data.append("Action", "GetList");
+        data.append("Table", "Device_" + localStorage["DeviceId"]);
+        fetch("./api/generic.php", { method:"post", body:data })
+            .then(res => res.json())
+            .then(data => onGetActivities(data));
+    }
+
+    function onGetActivities(data)
+    {
+        console.log(data);
+debugger
+        $('#maintable').bootstrapTable('removeAll');
+        $('#maintable').bootstrapTable('append', data.List);
+
+       
+       /*
+        if (dateNowIdx != null) {
+            startBlinkingRow(0);
+        }
+            */
+    }
+
+    $(document).ready(function() {
+
+        $(".link-home").show();
+ 
+        $('[data-toggle="tooltip"]').tooltip({html: true});
+
+        $('.modal').modal('hide');
+
+         
+        $('#maintable').bootstrapTable({
+
+            rowAttributes: function (row, index) {
+                return {
+                    'Id': row.Id  // Aggiunge data-id="..." alla riga
+                };
+            }
+        });
+ 
+                
+
+        getActivities();
+
+        $("[name='tabs']").on('change', function(){
+            if ($("#radio-1").prop('checked')) {
+                $(".app-main").load("./viewArchive.html");
+               
+            }
+            if ($("#radio-2").prop('checked')) {
+                $(".app-main").load("./viewConfigure.html");
+               
+            }
+        });
+        $(".app-main").addClass('mainBackground');
+         
+
+
+    });
+
+     
+    
+
+    $(document).on('click',"tbody tr", function(e) {
+    //$("tbody tr").on('click', function(e) {
+                        
+        e.stopPropagation(); // Blocca la propagazione dell'evento
+        e.preventDefault();  // Previene il comportamento predefinito (se presente)
+    });
+
+    $(document).on('click', '.btn-delete-file', function() {
+            
+        var id = $(this).closest('.modal').attr("fileId");
+
+         
+ 
+        Swal.fire({   
+                html: "Sei sicuro di voler cancellare questa gara?",
+                icon: "error",
+                showConfirmButton: true,
+                showCancelButton: true,
+                confirmButtonText: "Ok",
+                cancelButtonText: "No"
+        }).then((result) => {
+            
+            console.log(result);
+
+            if (result.isConfirmed) {
+                 
+            }
+        });
+         
+    });
+
+    function onDeleteFile(data)
+    {
+        console.log(data);
+    }
+
+
+    $(".fa-home").hide();
+    
+/* 
+    $(".fa-home").on('click', function() {
+ 
+        $('#maintable').bootstrapTable('destroy');
+        $("#md").remove();
+    }); */
+
+
+    
+
+     
+
+    function startBlinkingRow(rowIndex) 
+    {
+        var row = $("tr[data-index='" + rowIndex + "']");
+
+        row.find('td').addClass("blinking");
+    }
+
+
+    /*** Excel ***/
+
+    $(document).on('click', '.btn-convert-excel', function() {
+
+        var tr = $(this).closest('tr');
+        var fileText = tr.find('td').eq(2).text();  // Todo: remove eq 2
+
+       
+        var data = new FormData();
+        data.append("Action", "ConvertToExcel");
+        data.append("FileText", fileText);
+        fetch("./api/excel.php", { method:"post", body:data })
+            .then(res => res.json())
+            .then(data => onGeExcelConversion(data));
+
+
+        function onGeExcelConversion(data)
+        {
+            console.log(data);
+ 
+            if (data.Result)
+            {
+                showToastMessage("Excel convertito", "success");
+            }
+        }
+    });
+
+    $(document).on('click', '.btn-show-excel', function() {
+
+        var tr = $(this).closest('tr');
+        var fileText = tr.find('td').eq(2).text();
+
+        var excelFileName = ChangeFileExtension(fileText, ".xlsx");
+
+        location.href = "./reports/" + excelFileName;
+
+    });
+
+
+    // *** Emulator ***
+    
+    $(document).on('click', '.btn-send-face', function() {
+
+        var fdata = new FormData();
+        //debugger
+        fdata.append("Action", "UpdateState");
+        fdata.append("DeviceId", localStorage["DeviceId"]);
+        fdata.append("State", $(this).attr('face'));
+        
+        fetch("./api/statistic.php", { method:"post", body:fdata })
+            .then(res => res.json())
+            .then(data => onSendFace(data));
+            
+    });
+
+    $(document).on('click', '.btn-send-getactivities', function() {
+
+        var fdata = new FormData();
+        //debugger
+        fdata.append("Action", "GetActivities");
+        fdata.append("DeviceId", localStorage["DeviceId"]);
+        
+        fetch("./api/statistic.php", { method:"post", body:fdata })
+            .then(res => res.json())
+            .then(data => onSendFace(data));
+    });
+
+    
+ 
+    function onSendFace(data)
+    {
+        console.log(data);
+    }
+    
+    // refresh task
+
+    $(document).on('click', '.btn-refresh-day', function() {
+
+        debugger
+        var trDetail = $(this).closest('tr');
+        var tr = trDetail.prev();
+        var indexRow = tr.attr("data-index");
+        var id = tr.attr("Id");
+
+        var fdata = new FormData();
+        fdata.append("Action", "GetItem");
+        fdata.append("Table", "Device_" + localStorage["DeviceId"]);
+        fdata.append("Id", id);
+        fetch("./api/generic.php", { method:"post", body:fdata })
+            .then(res => res.json())
+            .then(data => onGetDayResult(data, indexRow));
+  
+    });
+    
+    function onGetDayResult(data, indexRow)
+    {
+        console.log(data);
+debugger
+
+        const newActivities = JSON.stringify([
+        {
+            Name: "LEFT",
+            Side: "LEFT",
+            Time: "00:02",
+            CounterSec: 10,
+            ElapsedTime: "00:00:10"
+        }
+        ]);
+        
+        var activities = data.Item.Activities;
+
+        $('#maintable').bootstrapTable('updateRow', {
+            index: indexRow,
+            row: {
+                Activities: activities
+            }
+        });
+
+        $('#maintable').bootstrapTable('expandRow', indexRow);
+        
+    }
+
+
+    
+         
+</script>
+      
+       
+     
+    
+    

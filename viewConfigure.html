@@ -1,0 +1,309 @@
+<head>
+    <link rel="stylesheet" href="css/neuromorphic.css">
+</head>
+
+<style>
+
+    body {
+        color: #ccc;
+        background: #080808;
+        font-family: 'Century Gothic';
+    }
+
+   
+    .container-video {
+        position: relative;
+        width: 100%; /* La larghezza si adatta al contenitore */
+        padding-top: 56.25%; /* Mantiene un rapporto 16:9 */
+        overflow: hidden;
+    }
+
+    .container-video video,
+    .container-video canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%; /* Il video e il canvas occupano tutta la larghezza */
+        height: 100%; /* Adatta l'altezza mantenendo le proporzioni */
+        object-fit: cover; /* Copre l'area disponibile */
+    }
+
+    .form-floating > label {
+        z-index: 30;
+    }
+
+    #map {
+        border-radius: 6px;
+        /* border: 2px solid red; */
+        transition: height 0.5s ease;
+    }
+
+    .viewConfigure 
+    {
+        background-image:  url("/cube365/imgs/desktop.jpg");
+        background-size: cover;
+    }
+
+</style>
+
+
+<div class="p-4 viewConfigure">
+    <div>
+        <div>
+         
+            <div id="listTask"></div>
+        </div>
+
+        <div class="card m-2" style="border:6px solid black;border-radius:8px;">
+            <div class="card-header">
+                <h2 class="text-center text-dark">New Task</h2>
+            </div>
+
+            <div class="form-floating m-2 ">
+                <select class="form-select" id="floatingSelectSide">
+                <option selected>-</option>
+                <option value="LEFT">LEFT</option>
+                <option value="RIGHT">RIGHT</option>
+                <option value="FRONT">FRONT</option>
+                <option value="TOP">TOP</option>
+                <option value="BACK">BACK</option>
+                <option value="BASE">BASE</option>
+                </select>
+                <label for="floatingSelectSide" class="text-success">Side</label>
+            </div>
+
+            <div class="row">
+                <div class="col form-floating m-2">
+                    <input class="form-control" placeholder="Insert task" id="NewTask">
+                    <label class="text-success mx-2" for="NewTask">Task</label> 
+                </div>
+            </div>
+            <div class="row">
+                <div class="col form-floating m-2">
+                    <input class="form-control" placeholder="Insert task" id="NewType">
+                    <label class="text-success mx-2" for="NewType">Type</label> 
+                </div>
+            </div>
+
+
+            <a class="btn btn-success btn-sendtask m-2">Create task</a>
+        </div>
+    </div>
+
+    
+    
+</div>
+ 
+ 
+
+<script>
+
+    
+    function ConvertToIsoDate(date) // not used
+    {
+        var t = date.toLocaleTimeString('it-IT', {
+            timeZone: 'Europe/Rome',
+        });
+        var lPos = t.lastIndexOf(":");
+        t =  t.slice(0, lPos);
+
+        if (t=="00:00") {
+            date.setHours(3);
+        }
+        var dt = date.toISOString();
+        var d = dt.split('T')[0];
+        
+        return d + "T" + t;
+    }
+
+    function updateSelectSide()
+    {
+        $('#floatingSelectSide option').css('display', 'block');
+
+        
+
+        $('#floatingSelectSide option').each(function() {
+
+            if ($(this).attr("value") != undefined ) {
+                var side = $(this).val();
+                var self = $(this);
+                $("#listTask").children().each(function() {
+                    taskSide = $(this).find('.side').text();
+                    if (taskSide == side) {
+                        self.css('display', 'none');
+                    }
+                });
+            }
+        });
+    }
+
+    function getTasks(deviceId)
+    {
+        /*
+        fetch("./api/statistic.php?Action=GetTasks&DeviceId=" + deviceId)
+            .then(res => res.json())
+            .then(data => onGetTasks(data));
+        */
+        var data = new FormData();
+        data.append("Action", "GetList");
+        data.append("Table", "Tasks");
+        data.append("DeviceId", deviceId);
+        fetch("./api/generic.php", { method:"post", body:data })
+            .then(res => res.json())
+            .then(data => onGetTasks(data, deviceId));
+    }
+
+    function onGetTasks(data)
+    {
+        console.log(data);
+ 
+        if (data.Error) {
+            console.error(data.Error);
+            return;
+        }
+
+        const createInputTask = (id, deviceId, label, value, category) => {
+            return `
+                    
+                <div contenteditable="true" class="form-control m-2 " style="border: 6px solid #03a96a; padding: 10px; min-height: 100px;">
+                    <i class="fa fa-trash mx-2 text-danger icon-delete" deviceId = "${deviceId}" style="float:right;cursor:pointer;"></i>
+                    <i class="fa fa-check text-success icon-save" style="float:right;cursor:pointer;"></i>
+                    <i class="side fa" style="color: gray;">${label}</i>
+                    <br>
+                    <span class="">${value}</span>
+                    <br>
+                    <i style="bottom: 15px;position: relative;float: right;"> ${category} </i>
+                </div>
+            `;
+        };
+
+        $("#listTask").children().remove();
+        var len = data.List.length;
+        if (len == 0) {
+            alert("no task");
+        }
+
+        var content = data.List[0].Content;
+       
+        var jContent = JSON.parse(content);
+        len = jContent.length;
+
+        if (len == 0) {
+            alert("no task");
+        }
+
+        for(var i = 0; i < len; i++) {
+
+            var obj = createInputTask(i, data.DeviceId, jContent[i].Side, jContent[i].Name, jContent[i].Type);
+            $("#listTask").append(obj);
+        }
+
+        updateSelectSide();
+    }
+    
+
+    $(document).ready(function() {
+
+        _sidebarActive = false;
+
+        $(".link-home").show();
+
+        $("#btn-send").show();
+
+        $("#menu-link").hide();
+
+        $(".fa-bell").hide();
+ 
+        resetMainClass();
+        $(".app-main").addClass('scoreBackground');
+
+        var deviceId = localStorage["DeviceId"];
+        getTasks(deviceId);
+  
+        $("[name='tabs']").on('change', function(){
+            if ($("#radio-1").prop('checked')) {
+                $(".app-main").load("./viewArchive.html");
+                
+            }
+            if ($("#radio-2").prop('checked')) {
+                $(".app-main").load("./viewConfigure.html");
+            }
+        })
+    });
+
+    $(".btn-sendtask").on('click', function (e) {
+        
+        var side = $("#floatingSelectSide").val();
+        if (side == "-") {
+            alert("no side selected");
+            return;
+        }
+
+        var name = $("#NewTask").val();
+        if (name == "") {
+            alert("no task selected");
+            return;
+        }
+
+        var type = $("#NewType").val();
+        if (type == "") {
+            alert("no type selected");
+            return;
+        }
+
+
+        //var taskLine = side + "," + task + "," + type + ";";
+
+        var task = {};
+
+        task.Side = side;
+        task.Name = name;
+        task.Type = type;
+
+
+        var fdata = new FormData();
+        fdata.append("Action", "SendTask");
+        fdata.append("DeviceId", localStorage["DeviceId"]);
+        fdata.append("Task", JSON.stringify(task));
+        debugger
+        fetch("./api/statistic.php", { method:"post", body:fdata })
+            .then(res => res.json())
+            .then(data => onSendTask(data)); 
+    });
+        
+    function onSendTask(data)
+    {
+        console.log(data);
+
+        $("#floatingSelectSide").val("-");
+        $("#NewTask").val("");
+        $("#NewType").val("");
+
+        updateSelectSide();
+
+        getTasks(data.DeviceId);
+
+        //$(".btn-gettasks").click();
+    }
+
+    
+    $(document).on('click', ".icon-delete", function (e) {
+            
+        var div = $(this).closest('div');
+        var side = div.find('.side').text();
+        var deviceId = $(this).attr("deviceId");
+
+        fetch("./api/statistic.php?Action=DeleteTaskBySide&DeviceId=" + deviceId + "&Side=" + side)
+            .then(res => res.json())
+            .then(data => onDeleteTaskBySide(data, $(this)));
+    });
+        
+    function onDeleteTaskBySide(data)
+    {
+        console.log(data);
+
+        getTasks(data.DeviceId);
+    }
+ 
+     
+</script>

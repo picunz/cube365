@@ -1,0 +1,745 @@
+
+<style>
+  
+    .page {
+        margin: 1em auto;
+        max-width: 768px;
+        height: 100%;
+    }
+    
+    .imgContainer {
+      
+        text-align:center;
+        align-items: flex-start;
+        flex-wrap: wrap; 
+        position:relative;
+    }
+    
+    .imgPreview {
+      
+        
+        border:1px solid blue;
+      
+        width: 300px;
+        height: 300px;
+        object-fit: cover;
+        border: 2px solid #ccc;
+        border-radius: 50%;
+        cursor: pointer;
+
+        background-image: url('imgs/account.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        
+        z-index:1;
+    }
+     /*
+    .cropper-view-box {
+      border-radius: 50%;
+      outline: none; 
+    }
+    
+    .cropper-face.cropper-move {
+      opacity: 0;
+    }
+    */
+
+    #result {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-top: 20px;
+            border: 2px solid black;
+            
+        }
+    #croppie-container {
+        margin: 20px auto;
+        /* background-image: url('imgs/account.png'); */
+        height:auto;
+    }
+
+    /****************************************************************************/
+
+        
+
+    html {
+        box-sizing: border-box;
+    }
+    *, *:before, *:after {
+        box-sizing: inherit;
+    }
+
+    
+    .card {
+        font-family: 'Lato', sans-serif;
+        font-weight: 300;
+    
+         
+        align-items: center;
+        justify-content: center;
+        
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        margin: 0;
+        padding: 0;
+        font-weight: 300;
+        text-shadow: 1px 1px 0 rgb(117, 23, 23);
+    }
+
+    h1, h2 {
+        font-size: 1.5em;
+    }
+
+    h2 {
+        &.sub.header {
+            font-size: 1em;
+        }
+    }
+    
+    
+        
+    .card {
+        
+        background: #fff;
+        width: 100%;
+        border-radius: 5px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px 0 rgba(34,36,38,.12), 0 2px 10px 0 rgba(34,36,38,.15), 0 55px 50px -20px rgba(34,36,38,.25);
+
+        position: relative;
+        background: linear-gradient(to bottom, #626d82 0%,#343d4d 100%);
+        color: rgba(255, 255, 255, 0.8);
+        text-align: center;
+    }
+    
+    .dial {
+        color: #e45b6c;
+        text-shadow: inset 1px 1px 0 rgba(255, 255, 255, 1);
+        background: #fff;
+        border-radius: 50%;
+        display: inline-block;
+       /*  height: 150px;
+        width: 150px; */
+       /*  margin: 50px 0;
+        padding: 40px; */
+        box-shadow: 0 4px 15px -10px  rgba(0, 0, 0, .1), 0 5px 15px 1px rgba(0, 0, 0, .18), 0 0 0 15px #fff, 0 0 0 22px #e45b6c, 0 55px 50px -20px rgba(34,36,38,.25);
+        
+        
+    }
+   
+    
+</style>
+ 
+
+<div class="card card-danger card-profile card-outline">
+    <div class="card-header text-danger text-center text-white">
+        <h5><span id="fullname"></span></h5>
+    </div>
+    <main class="my-3" style="position:relative;">
+         
+
+        <img id="result" style="opacity:0.0;position:absolute;" />
+
+         
+        <div id="currentProfile" class="imgContainer dial  my-3">
+           
+            <img class="imgPreview" id="imgPreview" data-toggle="tooltip" title="Modifica profilo">
+        </div>
+
+        <canvas id="myDonutChart" style="width:380;height:380;;text-align: center; position:absolute;top: 16px;"></canvas>
+     
+
+        <input type="file" id="upload-image" accept="image/*" style="display:none;" />
+        <div id="croppie-container"></div>
+
+        <div class="row">
+            <a class="btn btn-primary col-4 mx-auto my-3" id="SaveProfileImage" style="display:none;">Imposta</a>
+        </div>
+        
+    </main>    
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" id="Race" style="cursor:pointer;">Gare</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="Win" style="cursor:pointer;">Risultati</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="Heat" style="cursor:pointer;">HeatMap</a>
+        </li>
+    </ul>
+
+    <div id="Stats" class="my-2">
+        <div class="row container raceTab gx-5 text-start" style="display:none;">
+            
+        </div>
+
+        <div class="row container winTab" style="display:none;">
+            <div class="col text-start">
+                <h5 class="text-danger">Assoluto</h5>
+                <p class="m-0">Vittorie: <span id="AWin" class="float-end"></span></p>
+                <p class="m-0">Top 3: <span id="ATop3" class="float-end"></span></p>
+                <p class="m-0">Top 10: <span id="ATop10" class="float-end"></span></p>
+            </div>
+            <div class="col text-start">
+                <h5 class="text-danger">Categoria</h5>
+                <p class="m-0">Vittorie: <span id="RWin" class="float-end"></span></p>
+                <p class="m-0">Top 3: <span id="RTop3" class="float-end"></span></p>
+                <p class="m-0">Top 10: <span id="RTop10" class="float-end"></span></p>
+            </div>
+        </div>
+
+        <div class="row container mapTab gx-5" style="display:none;">
+            <div id="cityList">
+                <div class="row template m-0" style="display:none;">
+                    <span class="col city float-start">Town:</span>
+                    <span class="col count float-end">0</span>
+                </div>
+            </div>
+            <div id="italy-map" style="width: 600px; height: 400px"></div>
+        </div>
+    </div>
+
+    <div id="ShareFacebook">
+        <a class="btn btn-primary btn-screen-facebook m-3">
+            <i class="fab fa-facebook" ></i>&nbsp;Condividi su Facebook
+        </a>
+    </div>
+
+</div>    
+   
+
+<script>
+
+    /*** facebook share ***/ 
+    
+
+    $(".btn-screen-facebook").on('click', function() {
+
+        var card = $('.card-profile'); 
+
+
+        waitingStart();
+
+        html2canvas(card[0], {logging: false}).then((canvas) => {
+
+            contentDataURL = canvas.toDataURL('image/png');
+
+            var fileName = localStorage["name"] + "_" + localStorage["surname"] + "_fb.png";
+
+            var fdata = new FormData();
+            fdata.append("Action", "UploadImage");
+            fdata.append('FileName', fileName);
+            fdata.append("ImageData", contentDataURL);
+            
+            fetch("./dal/upload.php", { method:"post", body:fdata })
+                .then(res => res.json())
+                .then(data => onUploadImageForFacebook(data));
+                            
+        });
+
+    });
+
+    
+    function onUploadImageForFacebook(data)
+    {
+        debugger
+        console.log(data);
+
+        var filename = data.FileName; //'profile_Andrea.Chiappori_21.png';
+
+        var facebookLink = 'https://www.facebook.com/sharer/sharer.php?u=https://www.kiand.it/cube365/resources/' + filename;
+        
+        window.location.href = facebookLink;
+
+        waitingStop();
+
+    }
+
+</script>
+
+
+
+<script>
+
+    var _listRace = null;
+    var _listWin = null;
+
+    var _donutChart = null; 
+
+    $('[data-toggle="tooltip"]').tooltip(); 
+
+
+    $("#imgPreview").on('click', function() {
+		$("#upload-image").click();
+	});
+
+ 
+
+    $(document).ready(function () {
+        let croppieInstance;
+
+        // Gestione caricamento immagine
+        $('#upload-image').on('change', function (event) {
+
+            $("#currentProfile").hide();
+
+            $("#SaveProfileImage").show();
+
+            $("#result").css("position", "relative");
+
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    // Distruggi precedente istanza di Croppie se esiste
+                    if (croppieInstance) croppieInstance.destroy();
+
+                    // Crea nuova istanza di Croppie
+                    croppieInstance = new Croppie($('#croppie-container')[0], {
+                        viewport: { width: 200, height: 200, type: 'circle' },
+                        boundary: { width: 300, height: 300 },
+                    });
+
+                    // Carica immagine nell'area di ritaglio
+                    croppieInstance.bind({ url: e.target.result });
+                    $('#crop-button').show();
+                    
+                    $('#croppie-container').on('update.croppie', function () {
+                        croppieInstance.result({
+                            type: 'base64',
+                            size: 'viewport'
+                        }).then(function (base64) {
+                                $('#result').attr('src', base64);
+                                $('#result').css('opacity', '1.0');
+                        });
+                    });
+                    
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Evento per ritagliare
+        $('#crop-button').on('click', function () {
+        //$("img").on("mouseon", function () {
+            debugger
+            croppieInstance.result({ type: 'base64', size: 'viewport' }).then((base64) => {
+                $('#result').attr('src', base64).show(); // Mostra immagine ritagliata
+            });
+        });
+    });
+
+    // save image
+
+    $('#SaveProfileImage').on('click', function () {
+        
+        debugger
+        var dataImg = $("#result").attr('src');
+
+        var dottedFullname = $("#fullname").text().replace(/ /g, '.');
+
+        var fileName = 'profile_' + dottedFullname + '_' + localStorage["userId"] + '.png';
+
+        var fdata = new FormData();
+        fdata.append("Action", "UploadImage");
+        fdata.append('FileName', fileName);
+        fdata.append("ImageData", dataImg);
+        
+        fetch("./dal/upload.php", { method:"post", body:fdata })
+            .then(res => res.json())
+            .then(data => onUploadImageProfile(data));
+
+        function onUploadImageProfile(data)
+        {
+            console.log(data);
+
+            //$(".app-main").load("./viewProfile.html");
+            location.reload();
+        }    
+    });
+
+
+
+    var _colorsDonut = [
+        'rgba(255, 99, 132, 0.7)',
+        'rgba(54, 162, 235, 0.7)',
+        'rgba(255, 206, 86, 0.7)',
+        'rgba(75, 192, 192, 0.7)',
+        'rgba(153, 102, 255, 0.7)',
+        'rgba(54, 162, 235, 0.7)',
+        'rgba(255, 206, 86, 0.7)',
+        'rgba(75, 192, 192, 0.7)',
+        'rgba(153, 102, 255, 0.7)',
+        'rgba(240, 128, 128, 0.7)'
+    ];
+
+
+
+       
+
+    var config = {
+        type: 'doughnut',
+        //data: data,
+        borderWidth: 1,
+        cutout: '95%',
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false // Nasconde la legenda standard
+                }
+            },
+            layout: {
+                padding: 50
+            },
+            //maintainAspectRatio: false
+        },
+        plugins: [{
+            id: 'customLabels',
+            afterDraw: (chart) => {
+                
+                const ctx = chart.ctx;
+                const chartArea = chart.chartArea;
+                const datasets = chart.data.datasets[0];
+                const labels = chart.data.labels;
+
+                ctx.save();
+                labels.forEach((label, index) => {
+                    const meta = chart.getDatasetMeta(0);
+                    const pos = meta.data[index].tooltipPosition();
+
+                    ctx.fillStyle = 'black';
+                    ctx.font = '16px Arial';
+                    ctx.textAlign = 'center';
+
+                    const x = pos.x + (pos.x > chartArea.right ? 20 : 0);
+                    const y = pos.y;
+                    ctx.fillText(label, x, y);
+                });
+                ctx.restore();    
+            }
+        }]
+    };
+	
+
+    $(document).ready(function () {
+        
+        _sidebarActive = true;
+        $(".link-home").show();
+
+        $(".fa-bell").hide();
+
+        let fullname = localStorage["name"] + " " + localStorage["surname"];
+        $("#fullname").text(fullname);
+ 
+        getProfileImage($("#imgPreview"));
+
+        getStatistics();
+        
+    });
+
+    function getStatistics()
+    {
+        var fdata = new FormData();
+        fdata.append("Action", "GetStatistics");
+        fdata.append('UserId', localStorage["userId"]);
+        
+        fetch("./dal/races.php", { method:"post", body:fdata })
+            .then(res => res.json())
+            .then(data => onGetStatistics(data));
+    }
+
+    function createRaceTab(listRace)
+    {
+        var len = listRace.length;
+        var sum = 0;
+        for(var i = 0; i < len; i++)
+        {
+            $(".raceTab").append('<p class="m-0">' + listRace[i].RaceType + ':<span class="float-end">' + listRace[i].Count + '</span></p>');
+            sum += Number(listRace[i].Count); 
+        }
+        $(".raceTab").append('<p class="m-0 text-danger"> Gare totali:<span class="float-end">' + sum + '</span></p>');
+    }
+
+    function loadWinTab(listWin)
+    {
+        $("#AWin").text(listWin[0]["AWin"]);
+        $("#ATop3").text(listWin[0]["ATop3"]);
+        $("#ATop10").text(listWin[0]["ATop10"]);
+
+        $("#RWin").text(listWin[0]["RWin"]);
+        $("#RTop3").text(listWin[0]["RTop3"]);
+        $("#RTop10").text(listWin[0]["RTop10"]);
+    }
+
+    function createHeatMapList(dataMap)
+    {
+         
+        var len = Object.keys(dataMap).length;
+        
+        $("#cityList .clone").remove();
+
+        
+
+        var template = $("#cityList .template");
+/*
+        var clone = template.clone();
+        clone.addClass("clone").removeClass('template').find('.count').text('4');
+        template.after(clone.html());
+*/
+        for (let keyIso in dataMap) {
+            if (dataMap.hasOwnProperty(keyIso)) {
+
+                var clone = template.clone();
+                clone.addClass("clone").removeClass('template').find('.count').text(dataMap[keyIso]);
+                clone.find('.city').text(keyIso);
+                clone.show();
+                 
+                $("#cityList").append(clone);
+                console.log(`Chiave: ${keyIso}, Valore: ${dataMap[keyIso]}`);
+            }
+        }
+    }
+
+    function createDonutForRace()
+    {
+        var len = _listRace.length;
+
+        var raceTypeLabels = [];
+        var raceCount = [];
+        var raceColors = [];
+        for (var i = 0; i < len; i++ )
+        {
+            raceTypeLabels.push(_listRace[i].RaceType);
+            raceCount.push(_listRace[i].Count);
+            raceColors.push(_colorsDonut[i]);
+        } 
+
+        var data = {
+            labels: raceTypeLabels, 
+            datasets: [{
+                label: 'My Races',
+                data: raceCount,
+                backgroundColor: raceColors,
+            }]
+        };
+
+        config.data = data;
+
+        if (_donutChart != null) {
+            _donutChart.destroy();
+        }
+
+        _donutChart = new Chart($('#myDonutChart'), config);
+    }
+
+    function createDonutForWin()
+    {
+        var winLabels = [];
+        var winCount = [];
+        var winColors = [];
+
+        var winObj = _listWin[0];
+
+        var i = 0;
+        for (const key in winObj) {
+            console.log("Campo:", key, "Valore:", winObj[key]);
+
+            if (winObj[key] != 0)
+            {
+                winLabels.push(key);
+                winCount.push(winObj[key]);
+                winColors.push(_colorsDonut[i]);
+            }
+            i++;
+        }
+
+        var data = {
+            labels: winLabels, 
+            datasets: [{
+                label: 'My Win Chart',
+                data: winCount,
+                backgroundColor: winColors,
+            }]
+        };
+
+        config.data = data;
+
+        if (_donutChart != null) {
+            _donutChart.destroy();
+        }
+        _donutChart = new Chart($('#myDonutChart'), config);
+    }
+
+    function onGetStatistics(data)
+    {
+        console.log(data);
+
+        _listRace = data.ListRace;
+        _listWin = data.ListWin;
+
+        createRaceTab(_listRace);
+        loadWinTab(_listWin);
+
+        $(".raceTab").show();
+        $("#Race").addClass('active');
+
+
+        //createDonutForRace();
+    
+    }
+
+
+    $("#Race").on('click', function() {
+
+        $("#Race").addClass('active');
+        $("#Win").removeClass('active');
+        $("#Heat").removeClass('active');
+        $(".raceTab").show();
+        $(".winTab").hide();
+        $(".mapTab").hide();
+
+        createDonutForRace();
+    });
+
+    $("#Win").on('click', function() {
+
+        $("#Race").removeClass('active');
+        $("#Win").addClass('active');
+        $("#Heat").removeClass('active');
+        $(".raceTab").hide();
+        $(".winTab").show();
+        $(".mapTab").hide();
+
+        createDonutForWin();
+    });
+
+    $("#Heat").on('click', function() {
+
+        $("#Race").removeClass('active');
+        $("#Win").removeClass('active');
+        $("#Heat").addClass('active');
+
+        $(".raceTab").hide();
+        $(".winTab").hide();
+        $(".mapTab").show()
+
+        var userId = localStorage["userId"];
+
+        getMyRaces(userId, function(data) {
+
+            populateMap(data);
+        });
+    });
+
+    
+    function populateMap(data)
+    {
+        var gdpData = {};	
+
+        var list = data.List;
+        var len = list.length;  
+        
+        debugger
+
+        var markerDots = [];
+
+        for(var i = 0; i < len; i++)
+        {
+            var location = list[i].Location;
+            var city = location.split('(')[0].trim();
+            var iso = location.split('(').pop().slice(0,-1);
+
+            var check = gdpData[iso];
+            if (check == undefined) {
+                gdpData[iso] = 1;
+            }
+            else {
+                gdpData[iso]++;
+            }
+
+            var marker = {};
+            marker.latLng = [JSON.parse(list[i].Coord).lat, JSON.parse(list[i].Coord).lon];
+            marker.name = city;
+            marker.sigla = city;
+
+            markerDots.push(marker);
+        }
+
+        createHeatMapList(gdpData);
+            
+         
+        
+        var activityMarker = {
+            "latLng": [40.8522, 14.2681],
+            "name": "Napoli",
+            "sigla": "NA"
+        };
+        var activityMarker2 = {
+            "latLng": [41.9028, 12.4964], 
+            "name": "Roma", 
+            "sigla": "RM"
+        };
+
+        var rm = markerDots.find(a => a.sigla == "RM");
+        
+        $('#italy-map').vectorMap({
+            map: 'it_mill',
+
+            markerStyle: {
+                initial: {
+                    fill: '#F8E23B',
+                    stroke: '#383f47',
+                    r: 3
+                },
+                selected: {
+                    fill: 'blue'
+                },
+            },
+            markers: markerDots,
+            
+            series: {
+                regions: [{
+                    values: gdpData,
+                    //scale: [ '#96CFFF','#0071A4'],
+                    scale: [ '#FF8499','#FF0000'],
+                    normalizeFunction: 'polynomial'
+                }]
+            },
+            backgroundColor: 'transparent',
+            zoomOnScroll: false,
+            zoomButtons: true,
+            regionStyle: {
+                initial: {
+                    //fill: '#6794dc',
+                    fill: 'white',
+                    "fill-opacity": 0.8
+                },
+                hover: {
+                    "fill-opacity": 1.0,
+                    cursor: 'arrow'
+                }
+            },
+            onRegionTipShow: function (e, el, code) {
+
+                var tooltip = el.html();
+                    
+                var infoNumbers = gdpData[code];
+                if (infoNumbers > 0) {
+                    tooltip = tooltip + ' (' + infoNumbers + ')';
+                }
+                el.html(tooltip);
+            },
+            onMarkerTipShow: function (e, el, code) {
+                //el.html("test");
+                debugger
+            } 
+        });
+    }
+    
+
+</script>
