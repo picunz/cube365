@@ -1,0 +1,353 @@
+
+<!DOCTYPE html>
+  <html xmlns="https://www.w3.org/1999/xhtml" xmlns:fb="http://ogp.me/ns/fb#" lang="it">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Cube365</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/png">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png?v=1">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png?v=1">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png?v=1">
+    <link rel="manifest" href="favicon/webmanifest?v=1">
+    <link rel="shortcut icon" href="favicon/favicon.ico">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-config" content="favicon/browserconfig.xml?v=1">
+    <meta name="theme-color" content="#ffffff">
+
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="apple-mobile-web-app-title" content="cube365 app">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <link href="splashscreen/port-iphone-5.png?v=1.1" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" rel="apple-touch-startup-image" />
+    <link href="splashscreen/port-iphone-6.png?v=1.1" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" rel="apple-touch-startup-image" />
+    <link href="splashscreen/port-iphone-plus.png?v=1.1" media="(device-width: 621px) and (device-height: 1104px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" rel="apple-touch-startup-image" />
+    <link href="splashscreen/port-iphone-x.png?v=1.1" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" rel="apple-touch-startup-image" />
+    <link href="splashscreen/port-iphone-xr.png?v=1.1" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" rel="apple-touch-startup-image" />
+    <link href="splashscreen/port-iphone-xs-max.png?v=1.1" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" rel="apple-touch-startup-image" />
+    <link href="splashscreen/port-ipad.png?v=1.1" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" rel="apple-touch-startup-image" />
+    <link href="splashscreen/port-ipad-pro.png?v=1.1" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" rel="apple-touch-startup-image" />
+    <link href="splashscreen/Default@2x~universal~anyany.png?v=1.1" media="(device-width: 1366px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
+
+
+
+    <!-- bootstrap awesome-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css" crossorigin="anonymous">
+  
+    <!-- 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.3.0/styles/overlayscrollbars.min.css" integrity="sha256-dSokZseQNT08wYEWiz5iLI8QPlKxG+TswNRD8k35cpg=" crossorigin="anonymous">
+    -->
+    <link rel="stylesheet" href="adminlte/adminlte.css">
+
+    <link rel="stylesheet" href="adminlte/adminlte_custom.css">
+ 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.24.0/dist/bootstrap-table.min.css">  
+
+
+    <link rel="stylesheet" href="css/style.css">
+
+    
+    <!-- sweet alert -->
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.4/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.4/dist/sweetalert2.all.min.js"></script>
+
+    
+    <!-- cropping -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.css">
+   
+ 
+   
+    <!-- gsap -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script> -->
+      
+
+    <!-- fake-load -->
+    <!-- <link rel="stylesheet" href="css/loader.css"> -->
+     
+    <!--fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Cedarville+Cursive' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=Tangerine" rel="stylesheet" >
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" >
+    <link href="https://fonts.googleapis.com/css?family=Neonderthaw" rel="stylesheet" >
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" >
+    
+
+    <!-- fake-load -->
+    <!-- <script src="js/fakeload.js"></script> -->
+
+    <!-- html2canvas -->
+    <!-- <script src="./js/html2canvas.min.js"></script> -->
+
+    <!-- typed -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script> -->
+
+
+    <!-- jvectormap css-->
+    <!-- <link rel="stylesheet" href="css/jquery-jvectormap-2.0.5.css"> -->
+
+   
+     
+    <!-- app-config -->
+    <script src="js/appconfig.js"></script>
+    
+
+  </head>
+ 
+  <!-- sidebar-expand-lg bg-body-tertiary -->
+   <!-- layout-fixed -->
+  <body class="sidebar-expand bg-body-tertiary" style="font-family:Montserrat;">
+
+    <div id="loader-wrapper" style="display:none;">
+      <div id="preloader" class="loader"></div>
+      <div id="preloader-msg" class="loading-msg"></div>
+      <div id="preloader-error" class="loading-error"></div>
+    </div> 
+
+    <div class="app-wrapper">
+    
+      <nav id="adminlte-navbar" class="app-header navbar navbar-expand bg-body bg-cube365"></nav>
+      <aside id="adminlte-sidebar" class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark"></aside>
+   
+ 
+      <div class="main app-main">
+
+   
+        <img src ='imgs/account.png' class="mx-auto" style="width:300px;"> 
+       
+      
+      </div>
+
+    
+
+      <footer class="app-footer" style="position:fixed;">
+            <div class="float-end" id="version"> V1.02</div>
+            <div class="float-end d-none d-sm-inline">Race store</div>
+			      <strong>
+                Copyright &copy; 2024-2025&nbsp;
+                <a href="https://www.kiand.it" class="text-decoration-none">kiand.it</a>.
+            </strong>
+            All rights reserved.
+      </footer>
+
+      
+   
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>	
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script> 
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.24.0/dist/bootstrap-table.min.js"></script>
+    
+    
+    
+    
+    <script src="js/utilities.js" ></script>
+
+    <!-- <script src="js/enum.js"></script>  -->
+
+    <script src="adminlte/adminlte.js" ></script>
+    <script src="adminlte/adminlte_custom.js" ></script>
+
+    <!-- book -->
+
+    <!-- <link rel="stylesheet" href="css/turn.css">    -->
+
+    <!-- <script src="js/turn2.min.js"></script> -->
+    <!-- <script src="js/turn.min.js"></script> -->
+
+
+    
+
+ 
+    <!-- chart js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  
+
+    <!-- plugins -->
+    <!--  
+    <script src="js/plugin-attachCarousel.js"></script>
+
+    <script src="js/plugin-attachBoard.js"></script>  
+     -->
+ 
+
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+
+    <!-- jvectormap js-->
+    <!-- <script src="js/jquery-jvectormap-2.0.5.min.js"></script>
+    <script src="js/jquery-jvectormap-it-mill.js"></script>
+    <script src="js/districts.js"></script> -->
+
+     <!-- generic functions --> 
+    <script src="js/generic.js"></script>
+
+    <!-- audio player-->
+    <script src="js/audio.js"></script>
+
+    <!-- create pdf from image -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js?v=12"></script>
+ -->
+    <!-- read pdf and convert image -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.6.172/pdf.min.js"></script> -->
+
+    <!-- install -->
+    <!-- <script src="installApp.js?v=12" defer></script> -->
+
+
+    <script>
+
+      $(document).ready(function() {
+        
+        console.log("index.html");
+
+        $("#version").text(AppVersion);
+
+      //  customLog();
+       
+
+        $("#adminlte-navbar").load("./adminlte/helpers/navbar.php?page='report'");
+        $("#adminlte-sidebar").load("./adminlte/helpers/sidebar.php");
+        
+         
+
+
+          let el = document.createElement('div');
+          document.body.appendChild(el);
+          eruda.init({
+            container: el,
+            tool: ['console', 'elements']
+          });  
+
+
+          ready2();
+
+          
+          //var userId = localStorage["UserId"];
+          var userId = localStorage["UserId"];
+          if  (userId == undefined) {
+            
+            // normally sidebar is close!
+            $("body").addClass("sidebar-collapse");
+            $("body").removeClass("sidebar-open");
+            
+            
+            
+            $(".app-main").load("./adminlte/helpers/loginPage.html");
+          }
+          
+
+        //});
+
+        console.log("addEventListener");
+        window.addEventListener("message", function(event) {
+          console.log("Originnnnnnnnn:", event.origin);
+             
+            console.log("Origin:", event.origin);
+            if (event.origin !== "https://sito-esterno.com") {
+                console.warn("Origine non autorizzata:", event.origin);
+                return;
+            }
+            console.log("Messaggio ricevuto:", event.data);
+            event.source.postMessage("Messaggio ricevuto con successo!", event.origin);
+        });
+
+      });
+
+      
+      var _sidebarActive = false;
+
+      function ready2()
+      {
+        console.log('ready2 index.html');
+
+        $('[data-toggle="tooltip"]').tooltip({html: true}); 
+
+
+        //localStorage.removeItem('sidebar-collapse'); // Cancella lo stato salvato
+        //document.body.classList.add('sidebar-collapse'); // Forza la sidebar collassata
+
+        // ionserire nel custom.js
+        // disabled overlay
+        $(document).on('click', function (e) {
+            if (!_sidebarActive) {
+              console.log("sidebar disabled on click");
+              $("body").removeClass('sidebar-open');
+            }
+        }); 
+
+        window.addEventListener('resize', function (e) {             
+          e.preventDefault();
+          //if (!_sidebarActive) {
+              console.log("sidebar disabled on resize");
+              $("body").removeClass('sidebar-open');
+          //  }
+        });
+
+
+        // *** audio player **
+       
+         
+        audioPlayer = new AudioPlayer();
+        audioPlayer.init(console.log);
+
+        const soundPath = 'sounds/';
+        const soundList = [
+            'test',
+            'click'
+        ];
+
+        audioPlayer.downloadSounds(soundPath, soundList, ["mp3"])
+        .then(() => {
+            console.log("AudioPlayer: download sound");
+           
+            return;
+        })
+        .then(() => {
+            console.log('Sounds are ready');
+        });
+
+        // *** notifications
+
+        getMyNotifications(localStorage["userId"], function(data) {
+
+          console.log(data);
+          
+          if(data.List.length > 0) {
+
+            
+            var hasNotifications = data.List.some(item => item.IsRead == 0);
+
+            if (hasNotifications)
+            {
+              $(".link-notification").show();
+              $(".link-notification").addClass('fa-beat');
+            }
+          }
+        });
+
+        $(document).on('click', '.link-notification', function() {
+
+          $(".app-main").load("viewNotifications.html");
+        });
+            
+
+        
+      }
+
+  </script>
+
+ 
+  
+  </body>
+  
+</html>
+ 
+
