@@ -113,12 +113,6 @@
     
     function getActivities()
     {
-        /*
-        fetch("./api/statistic.php?Action=GetFileStats&UserId=0")
-            .then(res => res.json())
-            .then(data => onGetActivities(data));
-        */
-         
         var data = new FormData();
         data.append("Action", "GetList");
         data.append("Table", "Device_" + localStorage["DeviceId"]);

@@ -47,10 +47,13 @@
 </style>
 
 
+<div>
+    <a class="btn btn-success" id="TestDb">Test DB lite</a>
+</div>
+
 <div class="p-4 viewConfigure">
     <div>
         <div>
-         
             <div id="listTask"></div>
         </div>
 
@@ -304,6 +307,25 @@
 
         getTasks(data.DeviceId);
     }
+
+    $(document).on('click', "#TestDb", function (e) {
+        
+        var task = {};
+
+        task.Side = "Left";
+        task.Name = "Name";
+        task.Type = "Type";
+
+        var fdata = new FormData();
+        fdata.append("Action", "SendTask2");
+        fdata.append("DeviceId", localStorage["DeviceId"]);
+        fdata.append("Task", JSON.stringify(task));
+        debugger
+        fetch("./api/statistic.php", { method:"post", body:fdata })
+            .then(res => res.json())
+            .then(data => onSendTask(data)); 
+    });
+    
  
      
 </script>

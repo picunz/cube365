@@ -1,43 +1,13 @@
 <?php
-/*
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Pragma: no-cache");
-header("Expires: 0");
-*/
+
 
 require '../vendor/autoload.php';
-
-use Aws\S3\S3Client;
-use Aws\Exception\AwsException;
 
 ini_set('error_log', 'logs/error_races.log');
   
 
- 
-
 /** functions **/
 
-function getS3Client()
-{
-    try {
-        $s3 = new S3Client([
-            'region'  => 'eu-milan-1',
-            'endpoint' => 'https://ax6youxk7eeb.compat.objectstorage.eu-milan-1.oraclecloud.com',
-            'use_path_style_endpoint' => true,
-            'credentials' => [
-                'key'    => '67d7035b6483adbfda7353452afe3c2535dbfe81',
-                'secret' => 'CYRy3YblZk9KEIfcD5LuYMAT+V8Q7+Htrbol3hydYEs=',
-            ],
-        ]);
-
-        return $s3;
-
-    } catch (Exception $e) 
-    {
-        echo "Error: " . $e->getMessage();
-        return null;
-    }
-}
 
 function getISODate()
 {
@@ -73,69 +43,25 @@ if(isset($_POST['Action']))
 {
   $Action = $_POST['Action'];
 
-  if ($Action == "UpdateStatistics")
-  {
-    $userId = $_POST['UserId'];
-    $content = $_POST['Stats'];
 
-    $currentDate = date('Ymd');
-    $file = "../reports/stats" . $currentDate . ".txt";
-
-    clearstatcache();
-    $file_existed = file_exists($file);
-
-    //***  get file tasks for update stats ***/
-
-    $taskFile = "tasks_" . $userId . ".csv";
-
-    $taskFile_existed = file_exists($taskFile);
-
-    if (!$taskFile_existed) {
-
-        echo "Error: " . $taskFile . " not found";
-
-        exit;
-    }
-
-    
-    $handle = fopen($taskFile, "r");
-    
-    
-    $list = array();
-    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-        
-        array_push($list, array("Side" => $data[0], "Task" => $data[1], "Type" => rtrim($data[2], ';')));
-    }
-    fclose($handle);
-
-    
-
-    $jsonArray = json_decode($content, true);
-    $jsonArray['LEFT']= getTaskAndTypeFromSide($list, 'LEFT');
-    $jsonArray['RIGHT']= getTaskAndTypeFromSide($list, 'RIGHT');
-    $jsonArray['FRONT']= getTaskAndTypeFromSide($list, 'FRONT');
-    $jsonArray['BACK']= getTaskAndTypeFromSide($list, 'BACK');
-    $jsonArray['BASE']= getTaskAndTypeFromSide($list, 'BASE');
-    $jsonArray['TOP']= getTaskAndTypeFromSide($list, 'TOP');
-    $content = json_encode($jsonArray);
-
-    file_put_contents($file, $content);
- 
-    $jresult = array('Action' => $Action,
-                     'Stats' => $content,
-                     'OverWrite' => $file_existed,
-                     'File' => $file,
-                     'UserId' => $userId);
-    echo json_encode($jresult);
-
-    exit;
-  }
-
-  else if ($Action == "UpdateState")
+  /*
+  
+██╗   ██╗██████╗ ██████╗  █████╗ ████████╗███████╗    ███████╗████████╗ █████╗ ████████╗███████╗
+██║   ██║██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██╔════╝    ██╔════╝╚══██╔══╝██╔══██╗╚══██╔══╝██╔════╝
+██║   ██║██████╔╝██║  ██║███████║   ██║   █████╗      ███████╗   ██║   ███████║   ██║   █████╗  
+██║   ██║██╔═══╝ ██║  ██║██╔══██║   ██║   ██╔══╝      ╚════██║   ██║   ██╔══██║   ██║   ██╔══╝  
+╚██████╔╝██║     ██████╔╝██║  ██║   ██║   ███████╗    ███████║   ██║   ██║  ██║   ██║   ███████╗
+ ╚═════╝ ╚═╝     ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝    ╚══════╝   ╚═╝   ╚═╝  ╚═╝   ╚═╝   ╚══════╝
+                                                                                                
+  
+  */
+   
+  if ($Action == "UpdateState")
   {
     $deviceId = $_POST['DeviceId'];
     $state = $_POST['State'];
 
+    date_default_timezone_set('Europe/Rome');
     $currentDate = date('Ymd');
 
     $now = getISODate();
@@ -242,6 +168,7 @@ if(isset($_POST['Action']))
                      'ResultUpdate' => $resultU,
                      'RowTasks'=> $jTasks,
                      'NewDay' => $newDay,
+                     'CurrentDate' => $currentDate,
                      'Debug' => $now
                     );
     echo json_encode($jresult);
@@ -249,7 +176,18 @@ if(isset($_POST['Action']))
     exit;
   }
 
-  else if ($Action == "GetTasks") // from device // non ancora usata fsasl device
+  /*
+  
+██████╗ ███████╗████████╗     ████████╗ █████╗ ███████╗██╗  ██╗███████╗
+██╔════╝ ██╔════╝╚══██╔══╝    ╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝██╔════╝
+██║  ███╗█████╗     ██║          ██║   ███████║███████╗█████╔╝ ███████╗
+██║   ██║██╔══╝     ██║          ██║   ██╔══██║╚════██║██╔═██╗ ╚════██║
+╚██████╔╝███████╗   ██║          ██║   ██║  ██║███████║██║  ██╗███████║
+ ╚═════╝ ╚══════╝   ╚═╝          ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚══════╝
+                                                                       
+  
+  */
+  else if ($Action == "GetTasks") // from device
   {
     $deviceId = $_POST['DeviceId'];
     
@@ -278,6 +216,17 @@ if(isset($_POST['Action']))
     exit;
   }
 
+  /*
+  
+██████╗ ███████╗████████╗     █████╗  ██████╗████████╗██╗██╗   ██╗██╗████████╗██╗███████╗███████╗
+██╔════╝ ██╔════╝╚══██╔══╝    ██╔══██╗██╔════╝╚══██╔══╝██║██║   ██║██║╚══██╔══╝██║██╔════╝██╔════╝
+██║  ███╗█████╗     ██║       ███████║██║        ██║   ██║██║   ██║██║   ██║   ██║█████╗  ███████╗
+██║   ██║██╔══╝     ██║       ██╔══██║██║        ██║   ██║╚██╗ ██╔╝██║   ██║   ██║██╔══╝  ╚════██║
+╚██████╔╝███████╗   ██║       ██║  ██║╚██████╗   ██║   ██║ ╚████╔╝ ██║   ██║   ██║███████╗███████║
+ ╚═════╝ ╚══════╝   ╚═╝       ╚═╝  ╚═╝ ╚═════╝   ╚═╝   ╚═╝  ╚═══╝  ╚═╝   ╚═╝   ╚═╝╚══════╝╚══════╝
+                                                                                                  
+
+  */ 
   else if ($Action == "GetActivities")
   {
     $deviceId = $_POST['DeviceId'];
@@ -339,6 +288,17 @@ if(isset($_POST['Action']))
     exit;
   }
 
+  /*
+  
+███████╗███████╗███╗   ██╗██████╗     ████████╗ █████╗ ███████╗██╗  ██╗
+██╔════╝██╔════╝████╗  ██║██╔══██╗    ╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝
+███████╗█████╗  ██╔██╗ ██║██║  ██║       ██║   ███████║███████╗█████╔╝ 
+╚════██║██╔══╝  ██║╚██╗██║██║  ██║       ██║   ██╔══██║╚════██║██╔═██╗ 
+███████║███████╗██║ ╚████║██████╔╝       ██║   ██║  ██║███████║██║  ██╗
+╚══════╝╚══════╝╚═╝  ╚═══╝╚═════╝        ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
+                                                                       
+
+  */
 
   else if($Action == "SendTask")
   {
@@ -369,9 +329,6 @@ if(isset($_POST['Action']))
 
     $jsonStr = json_encode($jContent/*, JSON_PRETTY_PRINT*/);
 
-
-    //$jsonTasks = $_POST['Task'];
-
     $sql = "UPDATE Tasks SET Content = '$jsonStr'  WHERE DeviceId='$deviceId'";
 
     
@@ -392,13 +349,87 @@ if(isset($_POST['Action']))
     echo json_encode($jresult);
     exit;
   }
+
+
+  /*
+  
+███████╗███████╗███╗   ██╗██████╗     ████████╗ █████╗ ███████╗██╗  ██╗    ██████╗ 
+██╔════╝██╔════╝████╗  ██║██╔══██╗    ╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝    ╚════██╗
+███████╗█████╗  ██╔██╗ ██║██║  ██║       ██║   ███████║███████╗█████╔╝      █████╔╝
+╚════██║██╔══╝  ██║╚██╗██║██║  ██║       ██║   ██╔══██║╚════██║██╔═██╗     ██╔═══╝ 
+███████║███████╗██║ ╚████║██████╔╝       ██║   ██║  ██║███████║██║  ██╗    ███████╗
+╚══════╝╚══════╝╚═╝  ╚═══╝╚═════╝        ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝    ╚══════╝
+                                                                                   
+
+  */
+  else if($Action == "SendTask2")
+  {
+    $deviceId = $_POST['DeviceId'];
+    $jTask = json_decode($_POST['Task'], true);
+
+    $Side = $jTask["Side"];
+    $name = $jTask["Name"];
+    $type = $jTask["Type"];
+
+
+     
+    try {
+    
+        $pdo = new PDO('sqlite:../db/cube365.sqlite');
+
+        // Abilita eccezioni sugli errori
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        // Crea una tabella (se non esiste)
+        $sql = "CREATE TABLE IF NOT EXISTS Tasks (
+            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+            DeviceId TEXT NOT NULL,
+            Content TEXT NOT NULL
+        )";
+
+        $pdo->exec($sql);
+
+        //echo "Tabella creata con successo.";
+
+        $stmt = $pdo->prepare("INSERT INTO Tasks (DeviceId, Content) VALUES (:deviceId, :content)");
+        $stmt->execute([
+            ':deviceId' => '1234',
+            ':content' => 'json'
+        ]);
+    } 
+    catch (PDOException $e) {
+        echo "Errore: " . $e->getMessage();
+    }
+
+ 
+
+
+    $jresult = array('Action' => $Action,
+                     'Debug' => $stmt,
+                     'DeviceId' => $deviceId);
+    echo json_encode($jresult);
+    exit;
+  }
 }
+
+
+
 
 if (isset($_GET['Action']) && isset($_GET['DeviceId'])) 
 {
     $Action = $_GET['Action'];
+
+    /*
     
-    
+██████╗ ███████╗ ██████╗ ██╗███████╗████████╗███████╗██████╗     ██████╗ ███████╗██╗   ██╗██╗ ██████╗███████╗
+██╔══██╗██╔════╝██╔════╝ ██║██╔════╝╚══██╔══╝██╔════╝██╔══██╗    ██╔══██╗██╔════╝██║   ██║██║██╔════╝██╔════╝
+██████╔╝█████╗  ██║  ███╗██║███████╗   ██║   █████╗  ██████╔╝    ██║  ██║█████╗  ██║   ██║██║██║     █████╗  
+██╔══██╗██╔══╝  ██║   ██║██║╚════██║   ██║   ██╔══╝  ██╔══██╗    ██║  ██║██╔══╝  ╚██╗ ██╔╝██║██║     ██╔══╝  
+██║  ██║███████╗╚██████╔╝██║███████║   ██║   ███████╗██║  ██║    ██████╔╝███████╗ ╚████╔╝ ██║╚██████╗███████╗
+╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝    ╚═════╝ ╚══════╝  ╚═══╝  ╚═╝ ╚═════╝╚══════╝
+                                                                                                             
+
+    */
 
     if($Action == "RegisterDevice")
     {
@@ -466,59 +497,15 @@ if (isset($_GET['Action']) && isset($_GET['DeviceId']))
         exit;
  
     }
+
 /*
-    else if($Action == "GetTasks") // non usato da web, uso getlist
-    {
-        $deviceId = $_GET['DeviceId'];
-
-        $file = $deviceId . "\tasks.csv";
-
-        if (!file_exists($file)) {
-            $jresult = array('Action' => $Action,
-                            'DeviceId' => $deviceId,
-                            'File' => $file,
-                            'Error' => 'File not exists');
-            echo json_encode($jresult);
-            exit;
-        }
-
-        $handle = fopen($file, "r");
-        if ($handle == FALSE) {
-            $jresult = array('Action' => $Action,
-                            'DeviceId' => $deviceId,
-                            'Error' => 'Handle error');
-            echo json_encode($jresult);
-            exit;
-        }
-       
-        $content = file_get_contents($file);
-        if (empty($content) || strlen($content) <10 ) {
-            $jresult = array('Action' => $Action,
-                            'DeviceId' => $deviceId,
-                            'Content' => $content,
-                            'Error' => 'File empty');
-            echo json_encode($jresult);
-            exit;
-        }
-
-        $rows = array();
-        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-            
-            array_push($rows, array("Side" => $data[0], "Task" => $data[1], "Type" => rtrim($data[2], ';')));
-        }
-                    
-        fclose($handle);
-        
-       
-        $jresult = array('Action' => $Action,
-                         'DeviceId' => $deviceId,
-                         'List' => $rows
-                        );
-  
-        echo json_encode($jresult);
-        exit;
-    }
-*/
+██████╗ ███████╗██╗     ███████╗████████╗███████╗████████╗ █████╗ ███████╗██╗  ██╗██████╗ ██╗   ██╗███████╗██╗██████╗ ███████╗
+██╔══██╗██╔════╝██║     ██╔════╝╚══██╔══╝██╔════╝╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝██╔══██╗╚██╗ ██╔╝██╔════╝██║██╔══██╗██╔════╝
+██║  ██║█████╗  ██║     █████╗     ██║   █████╗     ██║   ███████║███████╗█████╔╝ ██████╔╝ ╚████╔╝ ███████╗██║██║  ██║█████╗  
+██║  ██║██╔══╝  ██║     ██╔══╝     ██║   ██╔══╝     ██║   ██╔══██║╚════██║██╔═██╗ ██╔══██╗  ╚██╔╝  ╚════██║██║██║  ██║██╔══╝  
+██████╔╝███████╗███████╗███████╗   ██║   ███████╗   ██║   ██║  ██║███████║██║  ██╗██████╔╝   ██║   ███████║██║██████╔╝███████╗
+╚═════╝ ╚══════╝╚══════╝╚══════╝   ╚═╝   ╚══════╝   ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝    ╚═╝   ╚══════╝╚═╝╚═════╝ ╚══════╝
+ */ 
     if($Action == "DeleteTaskBySide")
     {
         $deviceId = $_GET['DeviceId'];
@@ -574,31 +561,35 @@ if (isset($_GET['Action']) && isset($_GET['DeviceId']))
         exit;
     }
 
+    /*
+
+██████╗ ███████╗████████╗███████╗██╗██╗     ███████╗███████╗████████╗ █████╗ ████████╗███████╗
+██╔════╝ ██╔════╝╚══██╔══╝██╔════╝██║██║     ██╔════╝██╔════╝╚══██╔══╝██╔══██╗╚══██╔══╝██╔════╝
+██║  ███╗█████╗     ██║   █████╗  ██║██║     █████╗  ███████╗   ██║   ███████║   ██║   ███████╗
+██║   ██║██╔══╝     ██║   ██╔══╝  ██║██║     ██╔══╝  ╚════██║   ██║   ██╔══██║   ██║   ╚════██║
+╚██████╔╝███████╗   ██║   ██║     ██║███████╗███████╗███████║   ██║   ██║  ██║   ██║   ███████║
+ ╚═════╝ ╚══════╝   ╚═╝   ╚═╝     ╚═╝╚══════╝╚══════╝╚══════╝   ╚═╝   ╚═╝  ╚═╝   ╚═╝   ╚══════╝
+                                                                                               
+
+    */ 
+
     if($Action == "GetFileStats")
     {
-        /*
-        $userId = $_GET['UserId'];
-
-        $directory = "../reports/";
-
-        $files = scandir($directory);
-        $files = array_diff($files, array('.', '..'));
-
-        $filteredFiles = array_filter($files, function($file) use ($directory) {
-            return is_file($directory . '/' . $file) &&
-                   strpos($file, 'stats') === 0 &&
-                   pathinfo($file, PATHINFO_EXTENSION) === 'txt';
-        });
-        
-        $filteredFiles = array_values($filteredFiles);
-        
-        $jresult = array('Action' => $Action,
-                         'UserId' => $userId,
-                         'List' => $filteredFiles);
-        echo json_encode($jresult);
-        */
+         
         exit;
     }
+
+    /*
+    
+██████╗ ███████╗████████╗██████╗  █████╗ ██╗██╗  ██╗   ██╗███████╗████████╗ █████╗ ████████╗███████╗
+██╔════╝ ██╔════╝╚══██╔══╝██╔══██╗██╔══██╗██║██║  ╚██╗ ██╔╝██╔════╝╚══██╔══╝██╔══██╗╚══██╔══╝██╔════╝
+██║  ███╗█████╗     ██║   ██║  ██║███████║██║██║   ╚████╔╝ ███████╗   ██║   ███████║   ██║   ███████╗
+██║   ██║██╔══╝     ██║   ██║  ██║██╔══██║██║██║    ╚██╔╝  ╚════██║   ██║   ██╔══██║   ██║   ╚════██║
+╚██████╔╝███████╗   ██║   ██████╔╝██║  ██║██║███████╗██║   ███████║   ██║   ██║  ██║   ██║   ███████║
+ ╚═════╝ ╚══════╝   ╚═╝   ╚═════╝ ╚═╝  ╚═╝╚═╝╚══════╝╚═╝   ╚══════╝   ╚═╝   ╚═╝  ╚═╝   ╚═╝   ╚══════╝
+                                                                                                     
+
+    */
 
     if($Action == "GetDailyStats")
     {
@@ -639,6 +630,42 @@ if (isset($_GET['Action']) && isset($_GET['DeviceId']))
         echo json_encode($jresult);
         */
         exit;
+    }
+    $Action = $_POST['Action'];
+  
+
+    /*
+    
+██╗   ██╗██████╗ ██████╗  █████╗ ████████╗███████╗    ███████╗████████╗ █████╗ ████████╗██╗   ██╗███████╗
+██║   ██║██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██╔════╝    ██╔════╝╚══██╔══╝██╔══██╗╚══██╔══╝██║   ██║██╔════╝
+██║   ██║██████╔╝██║  ██║███████║   ██║   █████╗      ███████╗   ██║   ███████║   ██║   ██║   ██║███████╗
+██║   ██║██╔═══╝ ██║  ██║██╔══██║   ██║   ██╔══╝      ╚════██║   ██║   ██╔══██║   ██║   ██║   ██║╚════██║
+╚██████╔╝██║     ██████╔╝██║  ██║   ██║   ███████╗    ███████║   ██║   ██║  ██║   ██║   ╚██████╔╝███████║
+ ╚═════╝ ╚═╝     ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝    ╚══════╝   ╚═╝   ╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚══════╝
+                                                                                                         
+
+    */
+    if ($Action == "UpdateStatus")
+    {
+        $side = $_POST['Side'];
+        $userId = $_POST['UserId'];
+    
+        include "dbconfig.php";
+
+        $sql = "UPDATE Status SET Side = $side  WHERE UserId=" .$userId;
+        
+        $ret = 0;
+        if ($conn->query($sql) === TRUE) {
+            $ret = 1;
+        } 
+    
+        $conn->close();
+        
+        $result = array('Action' => $Action, 
+                        'Ret' => $ret, 
+                        'Side' => $side,
+                        'UserId' => $userId);
+        echo json_encode($result);
     }
 
     

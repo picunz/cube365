@@ -39,7 +39,7 @@
             data.append("code", code);
             data.append("email", email);
 
-            fetch("./dal/users.php", { method:"post", body:data })
+            fetch("./api/users.php", { method:"post", body:data })
                 .then(res => res.json())
                 .then(data => onAuthenticateUser(data));
                 //.catch(err => console.warn(err));

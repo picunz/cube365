@@ -235,7 +235,7 @@
             fdata.append('FileName', fileName);
             fdata.append("ImageData", contentDataURL);
             
-            fetch("./dal/upload.php", { method:"post", body:fdata })
+            fetch("./api/upload.php", { method:"post", body:fdata })
                 .then(res => res.json())
                 .then(data => onUploadImageForFacebook(data));
                             
@@ -349,7 +349,7 @@
         fdata.append('FileName', fileName);
         fdata.append("ImageData", dataImg);
         
-        fetch("./dal/upload.php", { method:"post", body:fdata })
+        fetch("./api/upload.php", { method:"post", body:fdata })
             .then(res => res.json())
             .then(data => onUploadImageProfile(data));
 
@@ -448,9 +448,7 @@
         fdata.append("Action", "GetStatistics");
         fdata.append('UserId', localStorage["userId"]);
         
-        fetch("./dal/races.php", { method:"post", body:fdata })
-            .then(res => res.json())
-            .then(data => onGetStatistics(data));
+        
     }
 
     function createRaceTab(listRace)
@@ -630,116 +628,11 @@
 
         var userId = localStorage["userId"];
 
-        getMyRaces(userId, function(data) {
-
-            populateMap(data);
-        });
+         
     });
 
     
-    function populateMap(data)
-    {
-        var gdpData = {};	
-
-        var list = data.List;
-        var len = list.length;  
-        
-        debugger
-
-        var markerDots = [];
-
-        for(var i = 0; i < len; i++)
-        {
-            var location = list[i].Location;
-            var city = location.split('(')[0].trim();
-            var iso = location.split('(').pop().slice(0,-1);
-
-            var check = gdpData[iso];
-            if (check == undefined) {
-                gdpData[iso] = 1;
-            }
-            else {
-                gdpData[iso]++;
-            }
-
-            var marker = {};
-            marker.latLng = [JSON.parse(list[i].Coord).lat, JSON.parse(list[i].Coord).lon];
-            marker.name = city;
-            marker.sigla = city;
-
-            markerDots.push(marker);
-        }
-
-        createHeatMapList(gdpData);
-            
-         
-        
-        var activityMarker = {
-            "latLng": [40.8522, 14.2681],
-            "name": "Napoli",
-            "sigla": "NA"
-        };
-        var activityMarker2 = {
-            "latLng": [41.9028, 12.4964], 
-            "name": "Roma", 
-            "sigla": "RM"
-        };
-
-        var rm = markerDots.find(a => a.sigla == "RM");
-        
-        $('#italy-map').vectorMap({
-            map: 'it_mill',
-
-            markerStyle: {
-                initial: {
-                    fill: '#F8E23B',
-                    stroke: '#383f47',
-                    r: 3
-                },
-                selected: {
-                    fill: 'blue'
-                },
-            },
-            markers: markerDots,
-            
-            series: {
-                regions: [{
-                    values: gdpData,
-                    //scale: [ '#96CFFF','#0071A4'],
-                    scale: [ '#FF8499','#FF0000'],
-                    normalizeFunction: 'polynomial'
-                }]
-            },
-            backgroundColor: 'transparent',
-            zoomOnScroll: false,
-            zoomButtons: true,
-            regionStyle: {
-                initial: {
-                    //fill: '#6794dc',
-                    fill: 'white',
-                    "fill-opacity": 0.8
-                },
-                hover: {
-                    "fill-opacity": 1.0,
-                    cursor: 'arrow'
-                }
-            },
-            onRegionTipShow: function (e, el, code) {
-
-                var tooltip = el.html();
-                    
-                var infoNumbers = gdpData[code];
-                if (infoNumbers > 0) {
-                    tooltip = tooltip + ' (' + infoNumbers + ')';
-                }
-                el.html(tooltip);
-            },
-            onMarkerTipShow: function (e, el, code) {
-                //el.html("test");
-                debugger
-            } 
-        });
-    }
+     
     
 
 </script>

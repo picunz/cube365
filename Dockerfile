@@ -1,12 +1,7 @@
-# Usa un'immagine base di PHP con Apache
 FROM php:8.2-apache
 
-# Copia i file dell'app nella directory del server
-COPY . /var/www/html
+RUN docker-php-ext-install mysqli pdo pdo_mysql
 
-# Espone la porta 80 per il traffico HTTP
-EXPOSE 80
+RUN a2enmod rewrite
 
-# Avvia Apache
-CMD ["apache2-foreground"]
-
+WORKDIR /var/www/html

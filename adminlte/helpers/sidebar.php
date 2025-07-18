@@ -57,6 +57,12 @@
                                 <p>Stato</p>
                             </a>
                         </li>
+
+                        <li class="nav-item"> 
+                            <a id="settings" href="#" class="nav-link"> <i class="nav-icon bi bi-gear text-white"></i>
+                                <p>Settings</p>
+                            </a>
+                        </li>
                         
                           
                         <hr>
@@ -89,6 +95,12 @@
 
                     sidebarCollapse();
                     $(".app-main").load("./viewStatus.html");
+                });
+
+                $("#settings").on('click', function () {
+
+                    sidebarCollapse();
+                    $(".app-main").load("./viewSettings.html");
                 });
 
                 

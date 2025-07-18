@@ -97,11 +97,6 @@ function storageUserAndHashAndRole(name, surname, id, hash, role)
 
 function uploadFileToServer(fileInfo, description, raceId, tagUpload, index, callback)
 {
-     
-    
-    //var parent = $("#Carousel_" + tagUpload).find('.carousel-inner');
-    //var index = parent.children().length + 1;
-
     var ext = fileInfo.name.split('.').pop();
     var userFullName = localStorage["name"] + "." + localStorage["surname"];
 
@@ -109,8 +104,7 @@ function uploadFileToServer(fileInfo, description, raceId, tagUpload, index, cal
 
     var fileName = date + "_" + "R" + String(raceId) + "_" + userFullName + "_" + tagUpload  + "_" + "I" + index + "." +  ext;
 
-    //var raceId = (localStorage["RaceId"]==undefined) ? 0 : localStorage["RaceId"];
-
+   
     var fdata = new FormData();
     fdata.append("Action", "UploadResource");
     fdata.append('FileName', fileName);
@@ -122,7 +116,7 @@ function uploadFileToServer(fileInfo, description, raceId, tagUpload, index, cal
     fdata.append("UserId", localStorage["userId"]);
     fdata.append("Type", tagUpload);
 
-    fetch("./dal/upload.php", { method:"post", body:fdata })
+    fetch("./api/upload.php", { method:"post", body:fdata })
         .then(res => res.json())
         .then(data => callback(data, fileInfo, description, tagUpload));
 }

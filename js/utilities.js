@@ -230,7 +230,7 @@ function logExternalFile(message)
     data.append("userFullName", userFullName);
     data.append("message", messageLog);
 
-    fetch("./dal/generic.php", { method: "post", body: data })
+    fetch("./api/generic.php", { method: "post", body: data })
         .then(res => res.json())
         .then(data => onLogExternalFile(data));
 }
