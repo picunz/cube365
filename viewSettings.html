@@ -1,0 +1,237 @@
+
+<div class="m-1" style="max-height: 100vh; overflow-y: auto;">
+ 
+    
+    <div class="card" style="background: linear-gradient(to right, #344968, #2a2c2e);">
+        <div class="card-header bg-primary">
+            <h2 class="text-center text-white">Settings</h2>
+        </div>
+
+        <div class="card-body card-detail" style="background-color:#2e3642;">
+ 
+            <div class="row">
+                <div class="col-6">
+                    <div class="card card-mysql">
+                        <div class="card-header bg-success">
+                            <div class="text-center text-white">Database</div>
+
+                             <div class="form-check mb-3 mx-auto" style="width:50%;">
+                                <input class="form-check-input" type="radio" id="UseMySql" name="selectdb" value="mysql">
+                                <label class="form-check-label" for="UseMySql">
+                                    Usa MySql
+                                </label>
+                            </div>
+                            
+                        </div>
+
+                        <div class="card-body card-detail" style="background-color:#2e3642;">
+                
+                            <div class="form-floating mb-3 mx-auto" style="width:50%;">
+                                <input type="text" class="form-control" id="Host" placeholder="-" >
+                                <label for="Host">Host</label>
+                            </div>
+                            <div class="form-floating mb-3 mx-auto" style="width:50%;">
+                                <input type="text" class="form-control" id="DbName" placeholder="-" >
+                                <label for="DbName">DbName</label>
+                            </div>
+                            <div class="form-floating mb-3 mx-auto" style="width:50%;">
+                                <input type="text" class="form-control" id="Username" placeholder="-" >
+                                <label for="Username">Username</label>
+                            </div>
+                            <div class="form-floating mb-3 mx-auto" style="width:50%;">
+                                <input type="text" class="form-control" id="Password" placeholder="-" >
+                                <label for="Password">Password</label>
+                            </div>
+
+                            <div class="form-floating mb-3 mx-auto" style="width:50%;">
+                                <a class="btn btn-success btn-save btnSaveMySql">Save</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="card card-sqlite">
+                        <div class="card-header bg-success">
+                            <div class="text-center text-white">Database</div>
+
+                            <div class="form-check mb-3 mx-auto" style="width:50%;">
+                                <input class="form-check-input" type="radio" id="UseSqlite" name="selectdb" value="sqlite">
+                                <label class="form-check-label" for="UseSqlite">
+                                    Usa Sqlite
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="card-body card-detail" style="background-color:#2e3642;">
+                
+                            <div class="form-floating mb-3 mx-auto" style="width:50%;">
+                                <input type="text" class="form-control" id="DbPath" placeholder="-" value="-" >
+                                <label for="DbPath">Db Path</label>
+                            </div>
+
+                         
+                            <div class="form-floating mb-3 mx-auto" style="width:50%;">
+                                <a class="btn btn-success btn-save btnSaveSqlite">Save</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <a class="btn btn-primary btn-test" style="display:none;">Test</a>
+</div>
+
+
+
+<script>
+
+    
+    function getCurrentSettings(deviceId)
+    {
+        var fdata = new FormData();
+        fdata.append("Action", "GetInfoDb");
+        fdata.append("DeviceId", deviceId);
+        
+        fetch("./api/settings.php", { method:"post", body:fdata })
+            .then(res => res.json())
+            .then(data => onGetCurrentSettings(data)); 
+    }
+
+    function onGetCurrentSettings(data)
+    {
+        console.log(data);
+
+        $("#Host").val(data.Servername);
+        $("#DbName").val(data.Dbname);
+        $("#Username").val(data.Username);
+        $("#Password").val(data.Password);
+        $("#DbPath").val(data.SqlitePath);
+        
+         
+        $("#UseSqlite").prop('checked', data.Usesqlite);
+ 
+        if (data.Usesqlite) {
+
+            $("#UseSqlite").prop('checked', true)
+            guiSelectDbSqlite();
+        }
+        else {
+
+            $("#UseMySql").prop('checked', true)
+            guiSelectedDbMysql();
+        }
+         
+    }
+
+    $(document).ready(function() {
+
+        $(".link-home").show();
+ 
+        $('[data-toggle="tooltip"]').tooltip({html: true});
+
+        $('.modal').modal('hide');
+
+        $('#maintable').bootstrapTable();
+
+ 
+        var deviceId = localStorage["DeviceId"];
+        getCurrentSettings(deviceId);
+        
+    });
+
+
+    $(".fa-home").on('click', function() {
+ 
+        $('#maintable').bootstrapTable('destroy');
+        $("#md").remove();
+    });
+
+    $(".btn-save").on('click', function() {
+  
+        var fdata = new FormData();
+        fdata.append("Action", "SetDb");
+        fdata.append("Host", $("#Host").val());
+        fdata.append("DbName", $("#DbName").val());
+        fdata.append("Username", $("#Username").val());
+        fdata.append("Password", $("#Password").val());
+        fdata.append("UseSqlite",  $('#UseSqlite').is(':checked'));
+        fdata.append("SqlitePath",  $('#DbPath').val());
+         
+        fetch("./api/settings.php", { method:"post", body:fdata })
+            .then(res => res.json())
+            .then(data => onSetDb(data)); 
+    });
+ 
+    function onSetDb(data)
+    {
+        console.log(data);
+        if (data.Error == 0) {
+
+            Swal.fire({   
+                html: "Configurazione cambiata con successo",
+                icon: "success"
+            });
+        }
+        else {
+            Swal.fire({   
+                html: "Configurazione non valida",
+                icon: "error"
+            });
+
+            var deviceId = localStorage["DeviceId"];
+            getCurrentSettings(deviceId);
+        }
+    }
+
+   
+
+    function guiSelectedDbMysql()
+    {
+        $(".card-mysql input").removeAttr("disabled");
+        $(".card-mysql input").css("background-color", "");
+
+        $(".card-sqlite input").attr("disabled");
+        $(".card-sqlite input").css("background-color", "gray");
+
+        $(".btnSaveMySql").removeClass("disabled");
+        $(".btnSaveSqlite").addClass("disabled");
+    }
+
+    function guiSelectDbSqlite()
+    {
+        $(".card-sqlite input").removeAttr("disabled");
+        $(".card-sqlite input").css("background-color", "");
+
+        $(".card-mysql input").attr("disabled");
+        $(".card-mysql input").css("background-color", "gray");
+
+        $(".btnSaveMySql").addClass("disabled");
+        $(".btnSaveSqlite").removeClass("disabled");
+    }
+
+    $("input[name='selectdb']").on('change', function() {
+
+        var val = $(this).val();
+
+        if (val=="mysql") {
+
+            guiSelectedDbMysql();
+        }
+        else if (val=="sqlite") {
+            
+            guiSelectDbSqlite();
+        }
+    });
+
+    
+    
+         
+</script>
+      
+       
+     
+    
+    

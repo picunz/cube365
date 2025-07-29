@@ -214,51 +214,7 @@
 
 <script>
 
-    /*** facebook share ***/ 
-    
-
-    $(".btn-screen-facebook").on('click', function() {
-
-        var card = $('.card-profile'); 
-
-
-        waitingStart();
-
-        html2canvas(card[0], {logging: false}).then((canvas) => {
-
-            contentDataURL = canvas.toDataURL('image/png');
-
-            var fileName = localStorage["name"] + "_" + localStorage["surname"] + "_fb.png";
-
-            var fdata = new FormData();
-            fdata.append("Action", "UploadImage");
-            fdata.append('FileName', fileName);
-            fdata.append("ImageData", contentDataURL);
-            
-            fetch("./api/upload.php", { method:"post", body:fdata })
-                .then(res => res.json())
-                .then(data => onUploadImageForFacebook(data));
-                            
-        });
-
-    });
-
-    
-    function onUploadImageForFacebook(data)
-    {
-        debugger
-        console.log(data);
-
-        var filename = data.FileName; //'profile_Andrea.Chiappori_21.png';
-
-        var facebookLink = 'https://www.facebook.com/sharer/sharer.php?u=https://www.kiand.it/cube365/resources/' + filename;
-        
-        window.location.href = facebookLink;
-
-        waitingStop();
-
-    }
-
+     
 </script>
 
 
@@ -326,7 +282,7 @@
         // Evento per ritagliare
         $('#crop-button').on('click', function () {
         //$("img").on("mouseon", function () {
-            debugger
+             
             croppieInstance.result({ type: 'base64', size: 'viewport' }).then((base64) => {
                 $('#result').attr('src', base64).show(); // Mostra immagine ritagliata
             });
@@ -337,18 +293,18 @@
 
     $('#SaveProfileImage').on('click', function () {
         
-        debugger
+         
         var dataImg = $("#result").attr('src');
 
         var dottedFullname = $("#fullname").text().replace(/ /g, '.');
 
-        var fileName = 'profile_' + dottedFullname + '_' + localStorage["userId"] + '.png';
+        var fileName = localStorage["DeviceId"] + '.png';
 
         var fdata = new FormData();
         fdata.append("Action", "UploadImage");
         fdata.append('FileName', fileName);
         fdata.append("ImageData", dataImg);
-        
+        debugger
         fetch("./api/upload.php", { method:"post", body:fdata })
             .then(res => res.json())
             .then(data => onUploadImageProfile(data));
@@ -433,7 +389,7 @@
 
         $(".fa-bell").hide();
 
-        let fullname = localStorage["name"] + " " + localStorage["surname"];
+        let fullname = localStorage["DeviceId"];
         $("#fullname").text(fullname);
  
         getProfileImage($("#imgPreview"));

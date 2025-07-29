@@ -1,5 +1,5 @@
  
- 
+     
     <img src ='imgs/account.png' class="mx-auto" style="width:300px;">
 
      
@@ -13,7 +13,7 @@
 
     </form>      
     <a class="btn btn-primary btn-enter col-md-3 mx-auto">Accedi</a>
-
+   
     
    <!--  <div class="box-forgotten-password mx-auto d-none">
         <span class="" style="font-size: 25px;text-shadow:-1px 2px 4px #86b7fe;cursor:pointer;">Password dimenticata?</span>
@@ -39,33 +39,38 @@
              
 
              
-           //console.log("Skip login");
+            console.log("ready login");
             //$(".app-main").load("./main.html"); 
            
             // update field
             let deviceId = localStorage["DeviceId"];
             if (deviceId != undefined) {
                 $("#DeviceId").val(deviceId);
+
+                checkDeviceIsValid(deviceId);
             }
+            
+ 
             
         }); 
 
         function checkDeviceIsValid(deviceId)
         {
             var data = new FormData();
-            data.append("Action", "GetList");
-            data.append("Table", "Tasks");
-            data.append("DeviceId", deviceId);
+            data.append("Action", "CheckTableExists");
+            data.append("Table", "Device_" + deviceId);
             fetch("./api/generic.php", { method:"post", body:data })
                 .then(res => res.json())
                 .then(data => onCheckDeviceIsValid(data, deviceId));
+
+                
         }
 
         function onCheckDeviceIsValid(data, deviceId)
         {
             console.log(data);
-              
-            if (data.List.length==0)
+               
+            if (!data.Result)
             {
                 console.warn("Device not found");
 

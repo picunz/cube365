@@ -9,6 +9,7 @@ ini_set('error_log', 'logs/error_upload.log');
  
 //////////////////// Generic  /////////////////////////
 
+include_once 'dbconfig.php';
 
 if(isset($_POST['Action'])) 
 {
@@ -34,15 +35,16 @@ if(isset($_POST['Action']))
     $imageData = str_replace(' ', '+', $imageData);
     $bin = base64_decode($imageData);
 
-    $image = imageCreateFromString($bin);
+    $image = imagecreatefromstring($bin);
 
     if (!$image) {
       die('Base64 value is not a valid image');
     }
   
-    $destFileName = $_SERVER['DOCUMENT_ROOT'] . '/cube365/resources' . '/' . $fileName;
-
+    $destFileName = $_SERVER['DOCUMENT_ROOT'] . '/resources' . '/' . $fileName;
     $resultUpFile = imagepng($image, $destFileName, 0);
+
+//    $resultUpFile = "";
 
     $result = array('Action' => $Action, 
                     'DestFileName' => $destFileName, 
@@ -78,7 +80,7 @@ if(isset($_POST['Action']))
     $type = $_POST['Type'];
     $idx = $_POST['Index'];
  
-    include "dbconfig.php";
+     
 
     $whenCreatedDt = getISODate();
 
@@ -88,7 +90,7 @@ if(isset($_POST['Action']))
     $result = $conn->query($sql);
 
     $id = $conn->insert_id;
-    $conn->close();
+    $conn = null;
 
     $ext = pathinfo($fileName, PATHINFO_EXTENSION);
 
@@ -119,7 +121,4 @@ if(isset($_POST['Action']))
   }
 
 }
-
-
-?>
  

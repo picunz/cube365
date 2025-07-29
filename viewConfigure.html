@@ -268,7 +268,7 @@
         fdata.append("Action", "SendTask");
         fdata.append("DeviceId", localStorage["DeviceId"]);
         fdata.append("Task", JSON.stringify(task));
-        debugger
+          
         fetch("./api/statistic.php", { method:"post", body:fdata })
             .then(res => res.json())
             .then(data => onSendTask(data)); 
@@ -309,7 +309,7 @@
     }
 
     $(document).on('click', "#TestDb", function (e) {
-        
+        /*
         var task = {};
 
         task.Side = "Left";
@@ -320,10 +320,11 @@
         fdata.append("Action", "SendTask2");
         fdata.append("DeviceId", localStorage["DeviceId"]);
         fdata.append("Task", JSON.stringify(task));
-        debugger
+         
         fetch("./api/statistic.php", { method:"post", body:fdata })
             .then(res => res.json())
             .then(data => onSendTask(data)); 
+        */
     });
     
  

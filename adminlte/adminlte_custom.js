@@ -48,21 +48,17 @@ function setImageElement(elImg, pathfilename)
 
 function getProfileImage(elImg)
 {
-     
-    //return null;
-    var name = localStorage["name"];
-    var surname = localStorage["surname"];
+    var deviceId = localStorage["DeviceId"];
 
-    if (name == undefined || surname == undefined) {
+    if (deviceId == undefined) {
          
         console.log("no name set");
         setImageElement(elImg, "imgs/account.png");
         return;
     }
 
-    var fullname = name + " " + surname;
-    var dottedFullname = fullname.replace(/ /g, '.');
-    fileName = 'profile_' + dottedFullname + '_' + localStorage["userId"] + '.png?no-cache=' + Date.now();
+    
+    fileName = localStorage["DeviceId"] + '.png?no-cache=' + Date.now();
 
     // get resoure path
     var pathfile = 'resources/' + fileName;

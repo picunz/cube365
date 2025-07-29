@@ -4,6 +4,7 @@ namespace PhpOffice;
 include "../PHPExcel/PhpOffice/autoload.php";
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
@@ -33,19 +34,13 @@ if(isset($_POST['Action']))
 
   if ($Action == "ConvertToExcel")
   {
-    $fileText = $_POST['FileText'];
+    $table = $_POST['Table'];
 
+    $list = json_decode($table);
 
-    // read file input
      
-    $json = file_get_contents("../reports/" . $fileText);
-    
-    $date = json_decode($json, true);
-    
-
     // prepare file out
-    $newFileName =  changeExtension($fileText, '.xlsx');
-    $OutFilename = '../reports/' . $newFileName;
+    $OutFilename = '../excels/archive.xlsx';
 
     $result = false;
 
@@ -55,39 +50,72 @@ if(isset($_POST['Action']))
 
 
     $tasks = array();
+ 
 
-    $filename = "stats20250204.txt";
-
-
-    $dateString = "-";
-    if (preg_match('/stats(\d{8})\.txt/', $fileText, $matches)) {
-      $dateString = $matches[1];  
-     
-    }
-
-
-         
-    array_push($tasks, 'Name');
+ 
+    array_push($tasks, 'Date');
+    array_push($tasks, 'LastUpdate');
+    array_push($tasks, 'Face');
+    array_push($tasks, 'Task');
     array_push($tasks, 'Type');
-    array_push($tasks, 'Hours');
+    array_push($tasks, 'ElapsedTime');
    
   
     //header
     $sheet->fromArray($tasks, null, 'A1');
     
 
-    for( $i = 0; $i < 3 /*count($list)*/; $i++)
-    {
-        $tasks = array();
+    $precDate = null;
+    $useAltColor = false;
 
+    for( $i = 0, $line = 0; $i < count($list); $i++)
+    {
         
-        array_push($tasks, $dateString);
-        array_push($tasks, 'D');
-        array_push($tasks, 'A');
+
+        $activities = json_decode($list[$i]->{'Activities'});
         
-        $sheet->fromArray($tasks, null, 'A' . ($i + 2));
+        $date = $list[$i]->{'Date'};
+
+        for($t = 0; $t < count($activities); $t++)
+        {
+          $tasks = array();
+
+          array_push($tasks, $list[$i]->{'Date'});
+          array_push($tasks, $list[$i]->{'LastUpdate'});
+          array_push($tasks, $activities[$t]->{'Side'});
+          array_push($tasks, $activities[$t]->{'Name'});
+          array_push($tasks, $activities[$t]->{'Type'});
+          array_push($tasks, $activities[$t]->{'ElapsedTime'});
+          
+          //array_push($tasks, 'a');
+
+          $line++;
+
+          $index = $line + 2;
+
+          $sheet->fromArray($tasks, null, 'A'. $index);
+
+          if ($date !== $precDate) {
+              $useAltColor = !$useAltColor;
+              $precDate = $date;
+          }
+
+          $color = 'FFFFFF';
+          if ($useAltColor) {
+            $color = '29b6f6';
+          }
+          $sheet->getStyle("A" . $index . ":F"  . $index)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($color);
+          
+        }
+        
+        
         
     }
+
+    foreach (range('A', 'C') as $col) {
+        $sheet->getColumnDimension($col)->setAutoSize(true);
+    }
+          
 
 
 
@@ -96,9 +124,10 @@ if(isset($_POST['Action']))
     
     $result = true;
     $jresult = array('Action' => $Action,
-                     'FileText' => $fileText,
-                     'InputData' => $date,
+                     'Table' => json_decode($table),
+                     'List' => $list,
                      'OutFilename' => $OutFilename,
+                     'Debug' => $activities,
                      'Result' => $result);
 
     echo json_encode($jresult);
@@ -106,8 +135,3 @@ if(isset($_POST['Action']))
     exit;
   }
 }
-
-
-
-
-?>

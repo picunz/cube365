@@ -1,11 +1,7 @@
 <head>
     <link rel="stylesheet" href="css/neuromorphic.css">
 </head>
-<style>
-
-      
-
-</style>
+ 
 
 <div class='container'>
  
@@ -103,34 +99,6 @@
 
         $(".app-main").load("./viewArchive.html");
     });
-
-      
-
-    // detect OS and prepare install dialog
-    var OS = getMobileOperatingSystem();
-    console.warn("OS: " + OS); 
-    localStorage["OS"] = OS;
  
-    //$("#installAppLink").hide();
-    //localStorage["InstalledApp"] = true;
-
-    var isIos = OS.indexOf("iOS") >= 0;
-    var ua = navigator.userAgent;
-    var isSafari = !ua.match(/CriOS/) && !ua.match(/FxiOS/) && !ua.match(/OPiOS/) && !ua.match(/mercury/);
-
-    if (isIos)
-    {
-        if (isSafari){
-            $('#a2hs .ios-safari').show();
-        } else {
-            $('#a2hs .ios-not-safari').show();
-        }
-
-        $('#install').show();
-    }
-    else 
-    {
-        $('#a2hs .android').show();
-    }
-
+ 
 </script>

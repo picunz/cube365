@@ -1,53 +1,21 @@
 <?php header('Access-Control-Allow-Origin: *');
  
-  //$servername = "31.11.39.98";
-  $servername = "db";
-  $username = "Sql1669990";
-  $password = "25fidenzaLF25!";
-  $dbname = "Sql1669990_2";
-
-  /*
-  $conn = new mysqli($servername, $username, $password, $dbname);
-
-  if ($conn->connect_error) {
-
-      die("Connection failed: " . $conn->connect_error);
-
-  }
+ 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
   
-  */
+//phpinfo();
 
-try {
-    $conn = new PDO(
-        "mysql:host=$servername;dbname=$dbname;charset=utf8mb4",
-        $username,
-        $password,
-        [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, // Gestione errori
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC // Fetch più leggibile
-        ]
-    );
-} catch (PDOException $e) {
-    die("Connessione fallita: " . $e->getMessage());
+require_once 'settings.php';
+
+if (!file_exists(__DIR__ . '/dbsettings.php')) {
+    die("Configurazione database non trovata.");
 }
 
-/*
-require_once __DIR__ . '/lib/Settings.php';
+$config = include __DIR__ . '/dbsettings.php';
+ 
 
-  
-// Inizializza la connessione al database
-Settings::initDb([
-    'servername'     => $servername,
-    'dbname'   => $dbname,
-    'username'     => $username,
-    'password' => '$password'
-]);
-*/
- ?>
+Settings::load($config);
 
-
-
-
-
-
-
+$conn = Settings::initDb($config);

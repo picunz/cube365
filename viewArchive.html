@@ -1,14 +1,20 @@
-                     
 <head>
     <link rel="stylesheet" href="css/neuromorphic.css">
 </head>
 
 <style>
 
+
     .table-hover > tbody > tr:hover > *
     {
         --bs-table-color-state: white;
         --bs-table-bg-state: #0d6efd4f;
+    }
+
+    .table-hover > tbody > tr.detail-view:hover > *
+    {
+        --bs-table-color-state: #a83841 ;
+        --bs-table-bg-state: #a83841 ;
     }
 
      
@@ -18,6 +24,7 @@
         background-color: var(--bs-bicistore-color) !important;
         /* color:white !important; */
     }
+    
     
     
 
@@ -39,10 +46,16 @@
     /* tr.detail-view td:hover {
         background-color: #a83841 !important;
     } */
+
+    .table-hover tbody tr.no-hover:hover {
+        background-color: inherit !important;
+    }
 </style>
      
 
-         
+
+
+
 <div id="toolbar"  class="btn-group float-right">
  
 </div>
@@ -64,9 +77,12 @@
             <a class="btn btn-primary btn-send-face col-1 m-1" face="MULTIPLE_SIDE">MULTIPLE_SIDE</a>
             <a class="btn btn-primary btn-send-face col-1 m-1" face="NO_SIDE">NO_SIDE</a>
         </div>
-        <div class="row">
-            <a class="btn btn-primary btn-send-getactivities col-1 m-1" face="-">GetActivities</a>
-        </div>
+        
+    </div>
+
+        
+    <div>
+        <a class="btn btn-success btn-convert-excel">Convert excel</a>
     </div>
 
     <h1 class="mb-4"></h1>
@@ -100,8 +116,7 @@
         
     function formatActions(value, row, index) 
     { 
-       return `<button class="btn btn-sm btn-primary btn-show-excel">Apri excel</button>
-               <button class="btn btn-sm btn-success btn-convert-excel">Excel</button>`;
+       
     }
 
     function detailFormatter(index, row) 
@@ -124,7 +139,7 @@
     function onGetActivities(data)
     {
         console.log(data);
-debugger
+   
         $('#maintable').bootstrapTable('removeAll');
         $('#maintable').bootstrapTable('append', data.List);
 
@@ -171,6 +186,7 @@ debugger
         $(".app-main").addClass('mainBackground');
          
 
+        $(".sidebar-overlay").trigger('click');
 
     });
 
@@ -240,13 +256,17 @@ debugger
 
     $(document).on('click', '.btn-convert-excel', function() {
 
+/*        
         var tr = $(this).closest('tr');
         var fileText = tr.find('td').eq(2).text();  // Todo: remove eq 2
-
+*/
        
+        var jsonTable = $("#maintable").bootstrapTable('getData');
+
         var data = new FormData();
         data.append("Action", "ConvertToExcel");
-        data.append("FileText", fileText);
+        data.append("Table", JSON.stringify(jsonTable));
+        
         fetch("./api/excel.php", { method:"post", body:data })
             .then(res => res.json())
             .then(data => onGeExcelConversion(data));
@@ -259,20 +279,15 @@ debugger
             if (data.Result)
             {
                 showToastMessage("Excel convertito", "success");
+
+                var outputPath = data.OutFilename;
+       
+                DownloadByUrl(outputPath);
             }
         }
     });
 
-    $(document).on('click', '.btn-show-excel', function() {
-
-        var tr = $(this).closest('tr');
-        var fileText = tr.find('td').eq(2).text();
-
-        var excelFileName = ChangeFileExtension(fileText, ".xlsx");
-
-        location.href = "./reports/" + excelFileName;
-
-    });
+     
 
 
     // *** Emulator ***
@@ -280,7 +295,7 @@ debugger
     $(document).on('click', '.btn-send-face', function() {
 
         var fdata = new FormData();
-        //debugger
+         
         fdata.append("Action", "UpdateState");
         fdata.append("DeviceId", localStorage["DeviceId"]);
         fdata.append("State", $(this).attr('face'));
@@ -291,30 +306,17 @@ debugger
             
     });
 
-    $(document).on('click', '.btn-send-getactivities', function() {
-
-        var fdata = new FormData();
-        //debugger
-        fdata.append("Action", "GetActivities");
-        fdata.append("DeviceId", localStorage["DeviceId"]);
-        
-        fetch("./api/statistic.php", { method:"post", body:fdata })
-            .then(res => res.json())
-            .then(data => onSendFace(data));
-    });
-
-    
- 
     function onSendFace(data)
     {
         console.log(data);
     }
+     
     
     // refresh task
 
     $(document).on('click', '.btn-refresh-day', function() {
 
-        debugger
+         
         var trDetail = $(this).closest('tr');
         var tr = trDetail.prev();
         var indexRow = tr.attr("data-index");
@@ -333,9 +335,9 @@ debugger
     function onGetDayResult(data, indexRow)
     {
         console.log(data);
-debugger
+ 
 
-        const newActivities = JSON.stringify([
+        /* const newActivities = JSON.stringify([
         {
             Name: "LEFT",
             Side: "LEFT",
@@ -343,7 +345,7 @@ debugger
             CounterSec: 10,
             ElapsedTime: "00:00:10"
         }
-        ]);
+        ]); */
         
         var activities = data.Item.Activities;
 

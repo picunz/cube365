@@ -21,22 +21,22 @@ function executeQueryForIdxReorder($dbConn, $table)
   return $result;
 }
 
-/*
-  ██████╗ ███████╗████████╗██╗     ██╗███████╗████████╗
-██╔════╝ ██╔════╝╚══██╔══╝██║     ██║██╔════╝╚══██╔══╝
-██║  ███╗█████╗     ██║   ██║     ██║███████╗   ██║   
-██║   ██║██╔══╝     ██║   ██║     ██║╚════██║   ██║   
-╚██████╔╝███████╗   ██║   ███████╗██║███████║   ██║   
- ╚═════╝ ╚══════╝   ╚═╝   ╚══════╝╚═╝╚══════╝   ╚═╝   
-                                                      
-*/                                                                
-                                                                
-                                                                
+include_once 'dbconfig.php';
+
+$Action = $_POST['Action'];
 
 if(isset($_POST['Action'])) 
 {
-  $Action = $_POST['Action'];
-  
+
+  /*
+  ██████╗ ███████╗████████╗ ██╗     ██╗███████╗████████╗
+  ██╔════╝ ██╔════╝╚══██╔══╝██║     ██║██╔════╝╚══██╔══╝
+  ██║  ███╗█████╗     ██║   ██║     ██║███████╗   ██║   
+  ██║   ██║██╔══╝     ██║   ██║     ██║╚════██║   ██║   
+  ╚██████╔╝███████╗   ██║   ███████╗██║███████║   ██║   
+  ╚═════╝ ╚══════╝   ╚═╝   ╚══════╝╚═╝╚══════╝   ╚═╝   
+  */                                                                
+ 
   if ($Action == "GetList")
   {
     $table = $_POST['Table'];
@@ -47,21 +47,18 @@ if(isset($_POST['Action']))
       $deviceId = $_POST['DeviceId'];
     }
  
-    $sql = "SELECT * FROM " . $table . " WHERE 1 ";
     
+
+    $sql = "SELECT * FROM " . $table . " WHERE 1 ";
     if ($deviceId != "-") {
       $sql.= " AND  DeviceId = '$deviceId' ";
     }
     
-    include "dbconfig.php";
+    
     
     $result = $conn->query($sql);
-    $rows = array();
-    while($r = $result->fetch()) {
-      $rows[] = $r;
-    }
-
-    //$conn->close();
+    $rows = $result->fetchAll(PDO::FETCH_ASSOC);
+ 
 
     $jresult = array('Action' => $Action,
                      'DeviceId' => $deviceId,
@@ -74,17 +71,17 @@ if(isset($_POST['Action']))
     exit;
   }
 
-/*
+  /*
 
- ██████╗ ███████╗████████╗    ██╗████████╗███████╗███╗   ███╗
-██╔════╝ ██╔════╝╚══██╔══╝    ██║╚══██╔══╝██╔════╝████╗ ████║
-██║  ███╗█████╗     ██║       ██║   ██║   █████╗  ██╔████╔██║
-██║   ██║██╔══╝     ██║       ██║   ██║   ██╔══╝  ██║╚██╔╝██║
-╚██████╔╝███████╗   ██║       ██║   ██║   ███████╗██║ ╚═╝ ██║
- ╚═════╝ ╚══════╝   ╚═╝       ╚═╝   ╚═╝   ╚══════╝╚═╝     ╚═╝
-                                                             
+  ██████╗ ███████╗████████╗    ██╗████████╗███████╗███╗   ███╗
+  ██╔════╝ ██╔════╝╚══██╔══╝    ██║╚══██╔══╝██╔════╝████╗ ████║
+  ██║  ███╗█████╗     ██║       ██║   ██║   █████╗  ██╔████╔██║
+  ██║   ██║██╔══╝     ██║       ██║   ██║   ██╔══╝  ██║╚██╔╝██║
+  ╚██████╔╝███████╗   ██║       ██║   ██║   ███████╗██║ ╚═╝ ██║
+   ╚═════╝ ╚══════╝   ╚═╝       ╚═╝   ╚═╝   ╚══════╝╚═╝     ╚═╝
+                                                              
 
-*/
+  */
   else if ($Action == "GetItem")
   {
     $table = $_POST['Table'];
@@ -93,18 +90,17 @@ if(isset($_POST['Action']))
     $sql = "SELECT * FROM " . $table . " WHERE Id = '$id' ";
     
     
-    include "dbconfig.php";
+     
     
     $result = $conn->query($sql);
-    $rows = array();
-    while($r = $result->fetch_assoc()) {
-      $rows[] = $r;
-    }
-
-    $rowCount = mysqli_num_rows($result); 
-    //$single = json_decode($rows[0], true);
     
-    $conn->close();
+    $rows = $result->fetchAll(PDO::FETCH_ASSOC);
+
+    
+    $rowCount = count($rows); 
+    
+    
+    $conn = null;
 
     $jresult = array('Action' => $Action,
                      'Id' => $id,
@@ -119,15 +115,14 @@ if(isset($_POST['Action']))
     exit;
   }
  
-/*  
-██╗   ██╗██████╗ ██████╗  █████╗ ████████╗███████╗
-██║   ██║██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██╔════╝
-██║   ██║██████╔╝██║  ██║███████║   ██║   █████╗  
-██║   ██║██╔═══╝ ██║  ██║██╔══██║   ██║   ██╔══╝  
-╚██████╔╝██║     ██████╔╝██║  ██║   ██║   ███████╗
- ╚═════╝ ╚═╝     ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝
-                                                  
-*/
+  /*  
+  ██╗   ██╗██████╗ ██████╗  █████╗ ████████╗███████╗
+  ██║   ██║██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██╔════╝
+  ██║   ██║██████╔╝██║  ██║███████║   ██║   █████╗  
+  ██║   ██║██╔═══╝ ██║  ██║██╔══██║   ██║   ██╔══╝  
+  ╚██████╔╝██║     ██████╔╝██║  ██║   ██║   ███████╗
+  ╚═════╝ ╚═╝     ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝                                              
+  */
 
   else if ($Action == "Update")
   {    
@@ -162,12 +157,12 @@ if(isset($_POST['Action']))
 
     $sql = "UPDATE $Table SET " . $sqlUpdates . " WHERE Id=" .$Id;
     
-    include "dbconfig.php";
+   
     
     $result = $conn->query($sql);
     
 
-    $conn->close();
+    $conn = null;
 
     $jresult = array('Action' => $Action,
                      'Table' => $Table,
@@ -181,17 +176,14 @@ if(isset($_POST['Action']))
     exit;
   }
 
-/*  
-
-██╗███╗   ██╗███████╗███████╗██████╗ ████████╗
-██║████╗  ██║██╔════╝██╔════╝██╔══██╗╚══██╔══╝
-██║██╔██╗ ██║███████╗█████╗  ██████╔╝   ██║   
-██║██║╚██╗██║╚════██║██╔══╝  ██╔══██╗   ██║   
-██║██║ ╚████║███████║███████╗██║  ██║   ██║   
-╚═╝╚═╝  ╚═══╝╚══════╝╚══════╝╚═╝  ╚═╝   ╚═╝   
-                                              
-
-*/                                                          
+  /*  
+  ██╗███╗   ██╗███████╗███████╗██████╗ ████████╗
+  ██║████╗  ██║██╔════╝██╔════╝██╔══██╗╚══██╔══╝
+  ██║██╔██╗ ██║███████╗█████╗  ██████╔╝   ██║   
+  ██║██║╚██╗██║╚════██║██╔══╝  ██╔══██╗   ██║   
+  ██║██║ ╚████║███████║███████╗██║  ██║   ██║   
+  ╚═╝╚═╝  ╚═══╝╚══════╝╚══════╝╚═╝  ╚═╝   ╚═╝   
+  */                                                          
                                                           
                                                           
   else if ($Action == "Insert")
@@ -232,10 +224,10 @@ if(isset($_POST['Action']))
  
     $sqlInsert = "INSERT INTO $Table " . $insertKeys . " VALUES " . $insertValues;
 
-    include "dbconfig.php";
+     
  
     $result = $conn->query($sqlInsert);
-    //$result = "";
+   
 
     $id = $conn->insert_id;
 
@@ -246,7 +238,7 @@ if(isset($_POST['Action']))
       $idxOrder = true;
     }
    
-    $conn->close();
+    $conn = null;
 
     $result = array('Action' => $Action, 
                     'Table' => $Table, 
@@ -259,27 +251,21 @@ if(isset($_POST['Action']))
   
   }
 
-/*  
-
-██████╗ ███████╗██╗     ███████╗████████╗███████╗
-██╔══██╗██╔════╝██║     ██╔════╝╚══██╔══╝██╔════╝
-██║  ██║█████╗  ██║     █████╗     ██║   █████╗  
-██║  ██║██╔══╝  ██║     ██╔══╝     ██║   ██╔══╝  
-██████╔╝███████╗███████╗███████╗   ██║   ███████╗
-╚═════╝ ╚══════╝╚══════╝╚══════╝   ╚═╝   ╚══════╝
-                                                 
-
-*/                                                      
+  /*  
+  ██████╗ ███████╗██╗     ███████╗████████╗███████╗
+  ██╔══██╗██╔════╝██║     ██╔════╝╚══██╔══╝██╔════╝
+  ██║  ██║█████╗  ██║     █████╗     ██║   █████╗  
+  ██║  ██║██╔══╝  ██║     ██╔══╝     ██║   ██╔══╝  
+  ██████╔╝███████╗███████╗███████╗   ██║   ███████╗
+  ╚═════╝ ╚══════╝╚══════╝╚══════╝   ╚═╝   ╚══════╝
+  */                                                      
                                                       
                                                       
   else if ($Action == "Delete")
   {
     $Table = $_POST['Table'];
     $Id = $_POST['Id'];
-
-    include "dbconfig.php";
-
-    
+ 
     $fileToDelete = "-";
     $filename = "-";
     $deleteResult = NULL;
@@ -289,10 +275,7 @@ if(isset($_POST['Action']))
       $sql = "SELECT * FROM $Table WHERE Id = '$Id'";
 
       $result = $conn->query($sql);
-      $rows = array();
-      while($r = $result->fetch_assoc()) {
-        $rows[] = $r;
-      }
+      $rows = $result->fetchAll(PDO::FETCH_ASSOC);
       $filename = $rows[0][$fileToDelete];
 
 
@@ -320,7 +303,7 @@ if(isset($_POST['Action']))
     }
     
 
-    $conn->close();
+    $conn = null;
 
     $result = array('Action' => $Action, 
                     'Table' => $Table, 
@@ -334,6 +317,37 @@ if(isset($_POST['Action']))
                     'Result' => $result);
     echo json_encode($result);
   }
+
+  else if ($Action == "CheckTableExists") {
+
+    $table = $_POST['Table'];
+ 
+    $driver = $conn->getAttribute(PDO::ATTR_DRIVER_NAME);
+
+    if ($driver === 'mysql') {
+        $sql = "SHOW TABLES LIKE :table";
+    } elseif ($driver === 'sqlite') {
+        $sql = "SELECT name FROM sqlite_master WHERE type='table' AND name = :table";
+    } else {
+        throw new Exception("Database driver non supportato: $driver");
+    }
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bindValue(':table', $table, PDO::PARAM_STR);
+    $stmt->execute();
+
+    //$exists = $stmt->rowCount() > 0;
+    $exists = $stmt->fetchColumn();
+
+    $result = array('Action' => $Action, 
+                    'Table' => $table, 
+                    'Driver' => $driver,
+                    'Result' => $exists);
+    echo json_encode($result);
+  }
+  
+
+
 
   /********** utils *****************************/
 
@@ -362,7 +376,7 @@ if(isset($_POST['Action']))
 
     
 
-    $filename = $_SERVER['DOCUMENT_ROOT'] . '/bicistore-races/logs' . '/' . $filename;
+    $filename = $_SERVER['DOCUMENT_ROOT'] . '/cube365/logs' . '/' . $filename;
 
     $messageLog = json_decode($message);
   
@@ -386,9 +400,6 @@ if(isset($_POST['Action']))
 
     exit;
   }
-
+ 
 }
-
-
-?>
  

@@ -116,7 +116,7 @@
                        
                     getProfileImage($("#imgProfile"));
 
-                    var fullname = localStorage["name"] + " " + localStorage["surname"];
+                    var fullname = localStorage["DeviceId"];
                     $("#infoname").text(fullname);
                 });
 

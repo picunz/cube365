@@ -12,7 +12,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png?v=1">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png?v=1">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png?v=1">
-    <link rel="manifest" href="favicon/webmanifest?v=1">
+    <link rel="manifest" href="webmanifest?v=1">
     <link rel="shortcut icon" href="favicon/favicon.ico">
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-config" content="favicon/browserconfig.xml?v=1">
@@ -54,12 +54,8 @@
     <link rel="stylesheet" href="css/style.css">
 
     
-    <!-- sweet alert -->
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.4/dist/sweetalert2.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.4/dist/sweetalert2.all.min.js"></script>
-
-    
+  
     <!-- cropping -->
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"></script>
@@ -154,6 +150,14 @@
 
     <!-- <script src="js/enum.js"></script>  -->
 
+
+    
+    <!-- sweet alert -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.4/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.4/dist/sweetalert2.all.min.js"></script>
+
+    
+    <!-- admin lte -->
     <script src="adminlte/adminlte.js" ></script>
     <script src="adminlte/adminlte_custom.js" ></script>
 
@@ -227,21 +231,15 @@
           });  
 
 
-          ready2();
+          init();
 
-          
-          //var userId = localStorage["UserId"];
-          var userId = localStorage["UserId"];
+            
+          var userId = localStorage["DeviceId"];
           if  (userId == undefined) {
             
-            // normally sidebar is close!
-            $("body").addClass("sidebar-collapse");
-            $("body").removeClass("sidebar-open");
             
-            
-            
-            $(".app-main").load("./adminlte/helpers/loginPage.html");
           }
+           
           
 
         //});
@@ -264,9 +262,17 @@
       
       var _sidebarActive = false;
 
-      function ready2()
+      // normally sidebar is close!
+      $("body").addClass("sidebar-collapse");
+      $("body").removeClass("sidebar-open");
+      
+      
+      
+      $(".app-main").load("./adminlte/helpers/loginPage.html");
+
+      function init()
       {
-        console.log('ready2 index.html');
+        console.log('init index.html');
 
         $('[data-toggle="tooltip"]').tooltip({html: true}); 
 
@@ -315,7 +321,7 @@
         });
 
         // *** notifications
-
+/*
         getMyNotifications(localStorage["userId"], function(data) {
 
           console.log(data);
@@ -334,10 +340,9 @@
         });
 
         $(document).on('click', '.link-notification', function() {
-
           $(".app-main").load("viewNotifications.html");
         });
-            
+*/           
 
         
       }

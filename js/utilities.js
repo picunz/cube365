@@ -1,92 +1,4 @@
- 
-const isPhoneNumber = string => [...string].every(c => '0123456789+-'.includes(c));
-
-
-const isToday = (someDate) => {
-    const today = new Date()
-    return someDate.getDate() == today.getDate() &&
-           someDate.getMonth() == today.getMonth() &&
-           someDate.getFullYear() == today.getFullYear()
-}
-
-let months = 
-[   
-    "Gennaio",
-    "Febbraio",
-    "Marzo",
-    "Aprile",
-    "Maggio",
-    "Giugno",
-    "Luglio",
-    "Agosto",
-    "Settembre",
-    "Ottobre",
-    "Novembre",
-    "Dicembre"
-];
-
- 
   
-function removeSpecialChars(str)
-{
-    return str.replace(/[^\w\s]/gi, '');
-}
-
-function InvalidSection()
-{
-    localStorage.removeItem("SessionValid");
-}
-
-function getMobileOperatingSystem() 
-{
-    var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-
-    console.log('getMobileOperatingSystem::userAgent ' + userAgent);
-
-    if (/windows phone/i.test(userAgent)) {
-        return "Windows Phone";
-    }
-    if (/android/i.test(userAgent)) {
-        return "Android";
-    }
-    if (/iPad/i.test(userAgent) && !window.MSStream) {
-        return "iOS-iPad";
-    }
-    if (/iPhone/i.test(userAgent) && !window.MSStream) {
-        return "iOS-iPhone";
-    }
-    if (/iPod/i.test(userAgent) && !window.MSStream) {
-        return "iOS-iPod";
-    }
-    return "unknown";
-}
- 
-function formValidationBootstrap()
-{
-    var forms = document.querySelectorAll('.needs-validation')
-
-    // Loop over them and prevent submission
-    Array.prototype.slice.call(forms)
-        .forEach(function (form) {
-            form.addEventListener('submit', function (event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault()
-                    event.stopPropagation()
-                }
-                form.classList.add('was-validated')
-            }, false)
-        })
-}
-
-function convertStringDateDayToDate(strDateDay)
-{
-    const year = parseInt(strDateDay.substring(0, 4), 10);
-    const month = parseInt(strDateDay.substring(4, 6), 10) - 1; // Mesi da 0 (Gennaio) a 11 (Dicembre)
-    const day = parseInt(strDateDay.substring(6, 8), 10);
-
-    const date = new Date(year, month, day);
-    return date;
-}
 
 function convertStringDateDayToFormattedDate(strDateDay)
 {
@@ -126,25 +38,8 @@ function ConvertToIsoDate(date)
     
     return d + "T" + t;
 }
-
-function ConvertToIsoDateD(date) 
-{
-    var isoDateTime = ConvertToIsoDate(date);
-    return isoDateTime.substring(0, isoDateTime.lastIndexOf('T'));
-}
-
-function ConvertToTimeHM(time)
-{
-    if (time == null)
-    {
-        return "-";
-    }
-    if (time.split(":").length == 3)
-    {
-        return time.substr(0, time.lastIndexOf(":"));
-    }
-    return time;
-}
+ 
+ 
 
 function CompressDateTimeForFile(dateTime)
 {
