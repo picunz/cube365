@@ -71,6 +71,9 @@ if(isset($_POST['Action']))
 
         $table = "Device_" . $deviceId;
 
+        $tableA = "Activities";
+        $sqlA = "";
+
         // get info task by side (/state)
         $taskName = $state;
         $taskType = "-";
@@ -112,10 +115,18 @@ if(isset($_POST['Action']))
         {   
             $newDay = true;
             $jActivities = "[]"; 
+
             $sqlI = "INSERT INTO $table (Date, Activities, LastUpdate, Created)";
             $sqlI .= " VALUES ('$currentDate', '$jActivities', '$now', '$now')";
             $resultI = $conn->query($sqlI);
             $jActivities = json_decode("[]", true);
+
+/*
+            $sqlA = "INSERT INTO $tableA (Date, DeviceId, Details, LastUpdate, Created)";
+            $sqlA .= " VALUES ('$currentDate', '$deviceId', '$jActivities', '$now', '$now')";
+            $resultA = $conn->query($sqlA);
+            $jActivities = json_decode("[]", true);
+            */
         }
 
         $found = false;
@@ -159,15 +170,44 @@ if(isset($_POST['Action']))
 
         $sqlU = "UPDATE $table SET Activities = '$activities', LastUpdate = '$now' WHERE Date='$currentDate'";
         $resultU = $conn->query($sqlU);
+
+        // update Activities table
+        $sqlUAct = "UPDATE $tableA SET Details = '$activities', LastUpdate = '$now' WHERE Date='$currentDate' AND DeviceId='$deviceId'";
+        $resultUAct = $conn->query($sqlUAct);
+
+        // *** update state in State table
+
+        // check if exists
+        $sqlCe = "SELECT * FROM Status WHERE DeviceId ='$deviceId'";
+        $queryCheck = $conn->query($sqlCe);
+        $rows = $queryCheck->fetchAll(PDO::FETCH_ASSOC);
+        $rowDevicesCount = count($rows); 
+
+        if ($rowDevicesCount > 0) {
+
+            // update existing row
+            $sqlUs = "UPDATE Status SET Side = '$state', Timestamp = '$now' WHERE DeviceId='$deviceId'";
+        } else {
+            // insert new row
+            $sqlUs = "INSERT INTO Status (DeviceId, Side, Timestamp) VALUES ('$deviceId', '$state', '$now')";
+        }
         
+        $retUs = 0;
+        if ($conn->query($sqlUs) === TRUE) {
+            $retUs = 1;
+        } 
+    
         $conn = null;
-        
+         
 
         $jresult = array('Action' => $Action,
                         'State' => $state,
+                        'sqlA' => $sqlA,
                         'jActivities' => $jActivities,
                         'DeviceId' => $deviceId,
+                        'rowDevicesCount' => $rowDevicesCount,
                         'ResultUpdate' => $resultU,
+                        'ResultUpdateState' => $retUs,
                         'RowTasks'=> $jTasks,
                         'NewDay' => $newDay,
                         'CurrentDate' => $currentDate,
@@ -238,15 +278,32 @@ if(isset($_POST['Action']))
 
 
        
+        $driver = $conn->getAttribute(PDO::ATTR_DRIVER_NAME);
 
-        $conn->exec("
-            CREATE TABLE IF NOT EXISTS Tasks (
-                Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                DeviceId TEXT UNIQUE,
-                Content JSON,
-                Description TEXT
-            )
-        ");
+        $sql = "";
+        if ($driver === 'mysql') {
+            $sql = "
+                CREATE TABLE IF NOT EXISTS Tasks (
+                    Id INT AUTO_INCREMENT PRIMARY KEY,
+                    DeviceId VARCHAR(255) UNIQUE,
+                    Content JSON,
+                    Description TEXT
+                )
+            ";
+        } elseif ($driver === 'sqlite') {
+            $sql = "
+                CREATE TABLE IF NOT EXISTS Tasks (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    DeviceId TEXT UNIQUE,
+                    Content JSON,
+                    Description TEXT
+                )
+            ";
+        } else {
+            throw new Exception('Database non supportato: ' . $driver);
+        }
+
+        $conn->exec($sql);
 
         $sqlS = "SELECT * FROM Tasks  WHERE DeviceId='$deviceId'";
         $queryresult = $conn->query($sqlS);
@@ -258,15 +315,9 @@ if(isset($_POST['Action']))
                 ':deviceId' => $deviceId,
                 ':content' => '{}'
             ]);
-
-            // aggiorna array con il nuovo valore appena inserito
-            $tasksArray = [[
-                'DeviceId' => $deviceId,
-                'Content' => '{}'
-            ]];
         }
 
-        $content = '';
+        $content = '{}';
         if (count($tasksArray) > 0 && isset($tasksArray[0]["Content"])) {
             $content = $tasksArray[0]["Content"];
         }
@@ -274,7 +325,21 @@ if(isset($_POST['Action']))
         
         $jContent = json_decode($content, true);
 
-        array_push($jContent, $jTask);
+        // check if task with same Side already exists
+        $existingTaskIndex = -1;
+        foreach ($jContent as $index => $task) {
+            if ($task['Side'] === $Side) {
+                $existingTaskIndex = $index;
+                break;
+            }
+        }
+
+        // update existing task or add new one
+        if ($existingTaskIndex !== -1) {
+            $jContent[$existingTaskIndex] = $jTask;
+        } else {
+            array_push($jContent, $jTask);
+        }
 
         $jsonStr = json_encode($jContent/*, JSON_PRETTY_PRINT*/);
 
@@ -296,8 +361,61 @@ if(isset($_POST['Action']))
                         'Task' => $jTask, 
                         'Ret' => $result,
                         'Debug' => $jContent,
-                        'DeviceId' => $deviceId);
+                        'DeviceId' => $deviceId
+                 );
         echo json_encode($jresult);
+        exit;
+    }
+
+     /*
+
+         .d8888b.                         888      888                       
+        d88P  Y88b                        888      888                       
+        Y88b.                             888      888                       
+         "Y888b.    .d88b.  88888b.   .d88888      888      .d88b.   .d88b.  
+            "Y88b. d8P  Y8b 888 "88b d88" 888      888     d88""88b d88P"88b 
+              "888 88888888 888  888 888  888      888     888  888 888  888 
+        Y88b  d88P Y8b.     888  888 Y88b 888      888     Y88..88P Y88b 888 
+         "Y8888P"   "Y8888  888  888  "Y88888      88888888 "Y88P"   "Y88888 
+                                                                        888 
+                                                                  Y8b d88P 
+                                                                   "Y88P"  
+                                                                                      
+    */
+
+    else if ($Action == "SendLog")
+    {
+        $deviceId = $_POST['DeviceId'];
+        $level = $_POST['Level'];
+        $message = $_POST['Message'];
+        $value = $_POST['Value'];
+    
+        date_default_timezone_set('Europe/Rome');
+        $currentDate = date('Ymd');
+        $now = date('Y-m-d H:i:s');
+
+        $sql = "INSERT INTO Logs (DeviceId, Level, Message, Value, Timestamp)";
+        $sql .= " VALUES ('$deviceId', '$level', '$message', '$value', '$now')";
+        
+        $ret = 0;
+        $resultInsert = $conn->query($sql);
+        if ($resultInsert !== false) {
+            $ret = 1;
+        }
+
+        $id = $ret === 1 ? (int)$conn->lastInsertId() : 0;
+    
+        $conn = null;
+        
+        $result = array('Action' => $Action, 
+                        'Ret' => $ret, 
+                        'Now' => $now,
+                        'Id' => $id,
+                        'Level' => $level,
+                        'Message' => $message,
+                        'Value' => $value,
+                        'DeviceId' => $deviceId);
+        echo json_encode($result);
         exit;
     }
 
@@ -344,7 +462,7 @@ if (isset($_GET['Action']) && isset($_GET['DeviceId']))
         if ($conn->query($sql) === TRUE) {
             $result = true;
         } else {
-            $result =  $conn->error;
+            $result =  $conn->errorInfo();
         }
 
         // insert null task is not exists
@@ -353,7 +471,7 @@ if (isset($_GET['Action']) && isset($_GET['DeviceId']))
         if ($conn->query($sqlT) === TRUE) {
             $resultTask = true;
         } else {
-            $resultTask =  $conn->error;
+            $resultTask =  $conn->errorInfo();
         }
 
         
@@ -450,36 +568,6 @@ if (isset($_GET['Action']) && isset($_GET['DeviceId']))
         exit;
     }
 
-    
-  
-
-    /*
-    ██╗   ██╗██████╗ ██████╗  █████╗ ████████╗███████╗    ███████╗████████╗ █████╗ ████████╗██╗   ██╗███████╗
-    ██║   ██║██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██╔════╝    ██╔════╝╚══██╔══╝██╔══██╗╚══██╔══╝██║   ██║██╔════╝
-    ██║   ██║██████╔╝██║  ██║███████║   ██║   █████╗      ███████╗   ██║   ███████║   ██║   ██║   ██║███████╗
-    ██║   ██║██╔═══╝ ██║  ██║██╔══██║   ██║   ██╔══╝      ╚════██║   ██║   ██╔══██║   ██║   ██║   ██║╚════██║
-    ╚██████╔╝██║     ██████╔╝██║  ██║   ██║   ███████╗    ███████║   ██║   ██║  ██║   ██║   ╚██████╔╝███████║
-     ╚═════╝ ╚═╝     ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝    ╚══════╝   ╚═╝   ╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚══════╝
-    */
-    if ($Action == "UpdateStatus")
-    {
-        $side = $_POST['Side'];
-        $userId = $_POST['UserId'];
-    
-        $sql = "UPDATE Status SET Side = $side  WHERE UserId=" .$userId;
-        
-        $ret = 0;
-        if ($conn->query($sql) === TRUE) {
-            $ret = 1;
-        } 
-    
-        $conn = null;
-        
-        $result = array('Action' => $Action, 
-                        'Ret' => $ret, 
-                        'Side' => $side,
-                        'UserId' => $userId);
-        echo json_encode($result);
-    }
+ 
 }
  
