@@ -123,10 +123,12 @@ if(isset($_POST['Action']))
     $writer->save($OutFilename);
     
     $result = true;
+
+    $OutFilenameForJs = preg_replace('/\./', '', $OutFilename, 1);
     $jresult = array('Action' => $Action,
                      'Table' => json_decode($table),
                      'List' => $list,
-                     'OutFilename' => $OutFilename,
+                     'OutFilename' => $OutFilenameForJs,
                      'Debug' => $activities,
                      'Result' => $result);
 

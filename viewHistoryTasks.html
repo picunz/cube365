@@ -1,0 +1,702 @@
+ 
+
+<style>
+
+
+    .table-hover > tbody > tr:hover > *
+    {
+        --bs-table-color-state: white;
+        --bs-table-bg-state: #0d6efd4f;
+    }
+
+    .table-hover > tbody > tr.detail-view:hover > *
+    {
+        --bs-table-color-state: #a83841 ;
+        --bs-table-bg-state: #a83841 ;
+    }
+
+     
+        
+    thead tr th {
+        
+        background-color: var(--bs-bicistore-color) !important;
+        /* color:white !important; */
+    }
+    
+    
+  
+
+    .bootstrap-table .detail-view td {
+        background-color: #a83841 !important; 
+        color: #721c24 !important; 
+    }
+ 
+    /* tr.detail-view td:hover {
+        background-color: #a83841 !important;
+    } */
+
+    .table-hover tbody tr.no-hover:hover {
+        background-color: inherit !important;
+    }
+
+    .task-history-summary {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin: 0.75rem 0 1rem;
+    }
+
+    .task-history-pill {
+        padding: 0.5rem 0.85rem;
+        border-radius: 999px;
+        background: rgba(13, 110, 253, 0.12);
+        color: #0d3c86;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .task-timeline-shell {
+        overflow-x: auto;
+        padding: 0.75rem 0 0.25rem;
+    }
+
+    .task-bars-chart {
+        min-width: max-content;
+        padding: 0.75rem 0.5rem 0.25rem;
+    }
+
+    .task-bars-months {
+        display: flex;
+        gap: 0.65rem;
+        min-width: max-content;
+        margin-bottom: 0.35rem;
+    }
+
+    .task-bars-month {
+        width: 56px;
+        flex: 0 0 56px;
+        text-align: center;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #0d3c86;
+        text-transform: capitalize;
+    }
+
+    .task-bars-grid {
+        position: relative;
+        display: flex;
+        align-items: flex-end;
+        gap: 0.65rem;
+        min-width: max-content;
+        height: 280px;
+        padding: 1.75rem 0.25rem 2.75rem;
+        border-bottom: 2px solid rgba(13, 110, 253, 0.28);
+    }
+
+    .task-bars-grid::before,
+    .task-bars-grid::after {
+        content: '';
+        position: absolute;
+        left: 0.25rem;
+        right: 0.25rem;
+        border-top: 1px dashed rgba(13, 110, 253, 0.12);
+        pointer-events: none;
+    }
+
+    .task-bars-grid::before {
+        top: 33%;
+    }
+
+    .task-bars-grid::after {
+        top: 66%;
+    }
+
+    .task-bar-day {
+        position: relative;
+        width: 56px;
+        flex: 0 0 56px;
+        height: 100%;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+    }
+
+    .task-bar-column {
+        position: relative;
+        width: 28px;
+        min-height: 6px;
+        border-radius: 12px 12px 0 0;
+        background: linear-gradient(180deg, rgba(13, 110, 253, 0.95), rgba(13, 110, 253, 0.55));
+        box-shadow: 0 10px 24px rgba(13, 110, 253, 0.18);
+    }
+
+    .task-bar-column.is-empty {
+        background: rgba(13, 110, 253, 0.08);
+        box-shadow: none;
+    }
+
+    .task-bar-value {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translate(-50%, -0.35rem);
+        padding: 0.18rem 0.45rem;
+        border-radius: 999px;
+        background: #fff;
+        border: 1px solid rgba(13, 110, 253, 0.12);
+        color: #0d3c86;
+        font-size: 0.72rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .task-bar-meta {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translate(-50%, 0.55rem);
+        width: 56px;
+        text-align: center;
+    }
+
+    .task-bar-date {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #0d3c86;
+        line-height: 1.15;
+    }
+
+    .task-bar-side {
+        font-size: 0.68rem;
+        color: #6c757d;
+        margin-top: 0.2rem;
+        line-height: 1.15;
+    }
+
+    .task-name {
+        font-weight: 700;
+        color: #0d3c86;
+    }
+
+    .task-type-badge {
+        display: inline-block;
+        padding: 0.2rem 0.55rem;
+        border-radius: 999px;
+        background: rgba(25, 135, 84, 0.12);
+        color: #146c43;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+</style>
+     
+
+
+
+
+<div id="toolbar"  class="btn-group float-right">
+ 
+</div>
+
+<div class="m-2" style="max-height: 100vh;">
+ 
+    <h1 class="mb-4"></h1>
+    <table 
+        id="taskstable"
+        data-toggle="table"
+        data-search="true"
+        data-pagination="true"
+        data-sortable="true"
+        data-detail-view="true"
+        data-detail-icon-open="fa fa-plus"
+        data-detail-icon-close="fa fa-minus"
+        data-detail-formatter="detailFormatter"
+        data-sort-name="TaskName"
+        data-sort-order="desc"
+        class="table table-bordered">
+        <thead class="bg-primary">
+            <tr>
+            <th data-field="TaskName" data-sortable="true" data-formatter="formatTaskName">Task</th>
+            <th data-field="TaskType" data-sortable="true" data-formatter="formatTaskType">Type</th>
+                <th data-field="WorkedDays" data-sortable="true">Days</th>
+                <th data-field="TotalWorked" data-sortable="true">Worked Hours</th>
+                
+                
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+<script>
+    var _taskHistoryMemory = [];
+
+    function secondsToWorkedTime(seconds)
+    {
+        var hours = Math.floor(seconds / 3600);
+        var minutes = Math.floor((seconds % 3600) / 60);
+        return String(hours).padStart(2, '0') + 'h:' + String(minutes).padStart(2, '0') + 'm';
+    }
+
+    function formatTaskName(value)
+    {
+        return '<span class="task-name">' + value + '</span>';
+    }
+
+    function formatTaskType(value)
+    {
+        return '<span class="task-type-badge">' + value + '</span>';
+    }
+
+    function parseIsoDate(dateString)
+    {
+        var parts = String(dateString || '').split('-');
+        if (parts.length !== 3) {
+            return null;
+        }
+
+        return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    }
+
+    function formatMonthYear(dateString)
+    {
+        var date = parseIsoDate(dateString);
+        if (!date || Number.isNaN(date.getTime())) {
+            return dateString;
+        }
+
+        return date.toLocaleDateString('it-IT', {
+            month: 'short',
+            year: 'numeric'
+        });
+    }
+
+    function getIsoWeek(dateString)
+    {
+        var date = parseIsoDate(dateString);
+        if (!date || Number.isNaN(date.getTime())) {
+            return '-';
+        }
+
+        var tmpDate = new Date(date.getTime());
+        tmpDate.setHours(0, 0, 0, 0);
+        tmpDate.setDate(tmpDate.getDate() + 3 - ((tmpDate.getDay() + 6) % 7));
+        var week1 = new Date(tmpDate.getFullYear(), 0, 4);
+
+        return 1 + Math.round(((tmpDate.getTime() - week1.getTime()) / 86400000 - 3 + ((week1.getDay() + 6) % 7)) / 7);
+    }
+
+    function formatDayLabel(dateString)
+    {
+        var date = parseIsoDate(dateString);
+        if (!date || Number.isNaN(date.getTime())) {
+            return dateString;
+        }
+
+        return date.toLocaleDateString('it-IT', {
+            day: '2-digit',
+            month: '2-digit'
+        });
+    }
+
+    function formatShortHours(seconds)
+    {
+        var totalMinutes = Math.round(Number(seconds || 0) / 60);
+        var hours = Math.floor(totalMinutes / 60);
+        var minutes = totalMinutes % 60;
+
+        if (hours === 0) {
+            return minutes + 'm';
+        }
+
+        if (minutes === 0) {
+            return hours + 'h';
+        }
+
+        return hours + 'h ' + minutes + 'm';
+    }
+
+    function addDays(date, days)
+    {
+        var result = new Date(date.getTime());
+        result.setDate(result.getDate() + days);
+        return result;
+    }
+
+    function toIsoDateString(date)
+    {
+        var year = date.getFullYear();
+        var month = String(date.getMonth() + 1).padStart(2, '0');
+        var day = String(date.getDate()).padStart(2, '0');
+
+        return year + '-' + month + '-' + day;
+    }
+
+    function buildDateRange(startDateString, endDateString)
+    {
+        var startDate = parseIsoDate(startDateString);
+        var endDate = parseIsoDate(endDateString);
+        var dates = [];
+
+        if (!startDate || !endDate || Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+            return dates;
+        }
+
+        for (var date = new Date(startDate.getTime()); date <= endDate; date = addDays(date, 1)) {
+            dates.push(toIsoDateString(date));
+        }
+
+        return dates;
+    }
+
+    function getBarHeight(seconds, maxSeconds)
+    {
+        var safeMax = maxSeconds > 0 ? maxSeconds : 1;
+        var ratio = seconds / safeMax;
+        var minHeight = seconds > 0 ? 16 : 6;
+        var maxHeight = 190;
+
+        return minHeight + ((maxHeight - minHeight) * ratio);
+    }
+
+    function buildTaskHistoryRows(list)
+    {
+        var grouped = {};
+
+        for (var i = 0; i < list.length; i++) {
+            var dayRow = list[i];
+            var details = dayRow.Details;
+
+            if (!Array.isArray(details)) {
+                continue;
+            }
+
+            for (var detailIndex = 0; detailIndex < details.length; detailIndex++) {
+                var detail = details[detailIndex];
+                var taskName = detail.Name || '-';
+                var taskType = detail.Type || '-';
+                var key = taskName + '||' + taskType;
+
+                if (!grouped[key]) {
+                    grouped[key] = {
+                        Id: key,
+                        TaskName: taskName,
+                        TaskType: taskType,
+                        TotalSeconds: 0,
+                        WorkedDays: 0,
+                        SidesMap: {},
+                        Timeline: []
+                    };
+                }
+
+                grouped[key].TotalSeconds += Number(detail.CounterSec || 0);
+                grouped[key].WorkedDays += 1;
+                grouped[key].SidesMap[detail.Side || '-'] = true;
+                grouped[key].Timeline.push({
+                    Date: dayRow.Date,
+                    Side: detail.Side || '-',
+                    Seconds: Number(detail.CounterSec || 0),
+                    ElapsedTime: detail.ElapsedTime || secondsToWorkedTime(Number(detail.CounterSec || 0))
+                });
+            }
+        }
+
+        var rows = [];
+        Object.keys(grouped).forEach(function(key) {
+            var item = grouped[key];
+            item.TotalWorked = secondsToWorkedTime(item.TotalSeconds);
+            item.Sides = Object.keys(item.SidesMap).join(', ');
+            item.Timeline.sort(function(a, b) {
+                return a.Date.localeCompare(b.Date);
+            });
+            rows.push(item);
+        });
+
+        return rows;
+    }
+
+    function renderTaskTimeline(row)
+    {
+        var groupedByDate = {};
+        var orderedDates = [];
+
+        for (var i = 0; i < row.Timeline.length; i++) {
+            var day = row.Timeline[i];
+            if (!groupedByDate[day.Date]) {
+                groupedByDate[day.Date] = {
+                    Date: day.Date,
+                    Seconds: 0,
+                    Sides: {}
+                };
+                orderedDates.push(day.Date);
+            }
+            groupedByDate[day.Date].Seconds += Number(day.Seconds || 0);
+            groupedByDate[day.Date].Sides[day.Side || '-'] = true;
+        }
+
+        orderedDates.sort();
+
+        if (orderedDates.length === 0) {
+            return `
+                <div class="task-history-summary">
+                    <div class="task-history-pill">Task: ${row.TaskName}</div>
+                    <div class="task-history-pill">Tipo: ${row.TaskType}</div>
+                    <div class="task-history-pill">Giorni: 0</div>
+                    <div class="task-history-pill">Totale: 0m</div>
+                </div>`;
+        }
+
+        var timelineHtml = '';
+        var monthHeadersHtml = '';
+        var previousMonthLabel = '';
+        var maxSeconds = 0;
+
+        for (var maxIndex = 0; maxIndex < orderedDates.length; maxIndex++) {
+            var maxDateKey = orderedDates[maxIndex];
+            maxSeconds = Math.max(maxSeconds, groupedByDate[maxDateKey].Seconds);
+        }
+
+        var allDates = buildDateRange(orderedDates[0], orderedDates[orderedDates.length - 1]);
+
+        for (var dateIndex = 0; dateIndex < allDates.length; dateIndex++) {
+            var dateKey = allDates[dateIndex];
+            var dayItem = groupedByDate[dateKey] || {
+                Date: dateKey,
+                Seconds: 0,
+                Sides: {}
+            };
+            var sides = Object.keys(dayItem.Sides).join(', ');
+            var monthLabel = formatMonthYear(dayItem.Date);
+            var barHeight = getBarHeight(dayItem.Seconds, maxSeconds);
+            var isEmpty = dayItem.Seconds === 0;
+            var barClass = isEmpty ? 'task-bar-column is-empty' : 'task-bar-column';
+            var valueLabel = isEmpty ? '0h' : formatShortHours(dayItem.Seconds);
+            var sideLabel = sides ? 'Face: ' + sides : '&nbsp;';
+
+            monthHeadersHtml += '<div class="task-bars-month">' + (monthLabel !== previousMonthLabel ? monthLabel : '&nbsp;') + '</div>';
+            previousMonthLabel = monthLabel;
+
+            timelineHtml += `
+                <div class="task-bar-day">
+                    <div class="${barClass}" style="height: ${barHeight}px;">
+                        <div class="task-bar-value">${valueLabel}</div>
+                    </div>
+                    <div class="task-bar-meta">
+                        <div class="task-bar-date">${formatDayLabel(dayItem.Date)}</div>
+                        <div class="task-bar-side">${sideLabel}</div>
+                    </div>
+                </div>`;
+        }
+
+        return `
+            <div class="task-history-summary">
+                <div class="task-history-pill">Task: ${row.TaskName}</div>
+                <div class="task-history-pill">Tipo: ${row.TaskType}</div>
+                <div class="task-history-pill">Giorni: ${row.WorkedDays}</div>
+                <div class="task-history-pill">Totale: ${row.TotalWorked}</div>
+                <div class="task-history-pill">Lati: ${row.Sides}</div>
+            </div>
+            <div class="task-timeline-shell">
+                <div class="task-bars-chart">
+                    <div class="task-bars-months">${monthHeadersHtml}</div>
+                    <div class="task-bars-grid">${timelineHtml}</div>
+                </div>
+            </div>`;
+    }
+        
+    function formatActions(value, row, index) 
+    { 
+       
+    }
+
+    function detailFormatter(index, row) 
+    {
+        return renderTaskTimeline(row);
+    }
+
+    
+    function getActivities()
+    {
+        var data = new FormData();
+        data.append("Action", "GetList");
+        data.append("DeviceId", localStorage["DeviceId"]);
+        data.append("Table", "Activities");
+        fetch("./api/generic.php", { method:"post", body:data })
+            .then(res => res.json())
+            .then(data => onGetActivities(data));
+    }
+
+    function onGetActivities(data)
+    {
+        console.log(data);
+
+        // keep all source rows in memory, then aggregate by distinct task
+        for(var i = 0; i < data.List.length; i++) {
+            var item = data.List[i];
+            item.Details = JSON.parse(item.Details);
+        }
+
+        _taskHistoryMemory = data.List;
+        var taskRows = buildTaskHistoryRows(_taskHistoryMemory);
+   
+        $('#taskstable').bootstrapTable('removeAll');
+        $('#taskstable').bootstrapTable('append', taskRows);
+    }
+
+    $(document).ready(function() {
+
+        $(".link-home").show();
+ 
+        $('[data-toggle="tooltip"]').tooltip({html: true});
+
+        $('.modal').modal('hide');
+
+        $('#taskstable').bootstrapTable({
+
+            rowAttributes: function (row, index) {
+                return {
+                    'Id': row.Id
+                };
+            }
+        });
+ 
+                
+
+        getActivities();
+
+        
+        resetMainClass();
+        $(".app-main").addClass('mainBackground');
+         
+ 
+
+    });
+
+    $(document).on('click',".btn-cube-emulator", function(e) {
+
+        $("#CubeEmulator").show();
+    });
+    
+     
+    
+
+    $(document).on('click',"tbody tr", function(e) {
+    //$("tbody tr").on('click', function(e) {
+                        
+        e.stopPropagation(); // Blocca la propagazione dell'evento
+        e.preventDefault();  // Previene il comportamento predefinito (se presente)
+    });
+
+    $(document).on('click', '.btn-delete-file', function() {
+            
+        var id = $(this).closest('.modal').attr("fileId");
+
+         
+ 
+        Swal.fire({   
+                html: "Sei sicuro di voler cancellare questa gara?",
+                icon: "error",
+                showConfirmButton: true,
+                showCancelButton: true,
+                confirmButtonText: "Ok",
+                cancelButtonText: "No"
+        }).then((result) => {
+            
+            console.log(result);
+
+            if (result.isConfirmed) {
+                 
+            }
+        });
+         
+    });
+
+    function onDeleteFile(data)
+    {
+        console.log(data);
+    }
+
+
+    $(".fa-home").hide();
+    
+ 
+
+  
+
+
+    /*** Excel ***/
+
+    $(document).on('click', '.btn-convert-excel', function() {
+
+ 
+        var jsonTable = $("#taskstable").bootstrapTable('getData');
+
+        var data = new FormData();
+        data.append("Action", "ConvertToExcel");
+        data.append("Table", JSON.stringify(jsonTable));
+        
+        fetch("./api/excel.php", { method:"post", body:data })
+            .then(res => res.json())
+            .then(data => onGeExcelConversion(data));
+
+
+        function onGeExcelConversion(data)
+        {
+            console.log(data);
+ 
+            if (data.Result)
+            {
+                showToastMessage("Excel convertito", "success");
+ 
+                var outputPath = data.OutFilename;
+       
+                DownloadByUrl(outputPath);
+            }
+        }
+    });
+
+     
+ 
+
+    function onSendFace(data)
+    {
+        console.log(data);
+    }
+     
+    
+    // refresh task
+
+    $(document).on('click', '.btn-refresh-day', function() {
+
+          
+        var trDetail = $(this).closest('tr');
+        var tr = trDetail.prev();
+        var indexRow = tr.attr("data-index");
+        var id = tr.attr("Id");
+ 
+        var fdata = new FormData();
+        fdata.append("Action", "GetItem");
+        fdata.append("Table", "Activities"); 
+        fdata.append("Id", id);
+        fetch("./api/generic.php", { method:"post", body:fdata })
+            .then(res => res.json())
+            .then(data => onGetDayResult(data, indexRow));
+    });
+    
+    function onGetDayResult(data, indexRow)
+    {
+        console.log(data);
+
+        getActivities();
+        
+    }
+
+
+    
+         
+</script>
+      
+       
+     
+    
+    

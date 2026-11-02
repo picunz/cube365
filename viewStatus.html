@@ -1,36 +1,127 @@
                      
  
-     
+<style>
  
-<div class="m-1" style="max-height: 100vh; overflow-y: auto;">
+
+.scene{
+    width:200px;
+    height:200px;
+
+    position: relative;
+    top: 90px;
+    left: 50%;
+}
+
+.cube{
+    width:100%;
+    height:100%;
+    position:relative;
+    transform-style:preserve-3d;
+    transition:transform .9s ease;
+
+    /* 👇 prospettiva SEMPRE attiva */
+    transform: rotateX(-30deg) rotateY(35deg);
+}
+
+.face{
+    position:absolute;
+    width:100%;
+    height:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-weight:bold;
+    font-size:22px;
+    border:2px solid rgba(255,255,255,.4);
+}
+
+.front{ background:orange; transform:translateZ(100px); }
+.back{ background:green; transform:rotateY(180deg) translateZ(100px); }
+.right{ background:#646cff; transform:rotateY(90deg) translateZ(100px); }
+.left{ background:#646cff; transform:rotateY(-90deg) translateZ(100px); }
+.top{ background:white; color:#111; transform:rotateX(90deg) translateZ(100px); }
+.bottom{ background:white; transform:rotateX(-90deg) translateZ(100px); }
+
+.buttons{
+    margin-top:30px;
+    display:grid;
+    grid-template-columns:repeat(3,120px);
+    gap:10px;
+}
+
+button{
+    padding:10px;
+    background:#646cff;
+    border:none;
+    color:white;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+
+h2 {
+    font: 1em ubuntu mono, monospace;
+}
+
+</style>
+      
  
     
-    <div class="card" style="background: linear-gradient(to right, #344968, #2a2c2e);">
+    <div class="card w-50 m-3 mx-auto" style="background: linear-gradient(to right, #344968, #2a2c2e);">
         <div class="card-header bg-primary">
             <h2 class="text-center text-white"> Status</h2>
         </div>
 
-        <div class="card-body card-detail" style="background-color:#2e3642;">
-<!-- 
+        <div class="card-body card-detail" style="background-color:#2e3642;height:600px;">
+ 
             <ul class="bar-graph"> 
                 
                 
             </ul>
-               -->
+               
 
             <div id="StatusDiv"></div>
+
+                <div class="scene">
+                <div class="cube" id="cube">
+
+                    <div class="face front">FRONT</div>
+                    <div class="face back">BACK</div>
+                    <div class="face right">RIGHT</div>
+                    <div class="face left">LEFT</div>
+                    <div class="face top">TOP</div>
+                    <div class="face bottom">WHITE</div>
+
+                </div>
+            </div>
+
+
+            <!-- <div class="buttons">
+                <button onclick="toTop('FRONT')">Front</button>
+                <button onclick="toTop('BACK')">Back</button>
+                <button onclick="toTop('RIGHT')">Right</button>
+                <button onclick="toTop('LEFT')">Left</button>
+                <button onclick="toTop('TOP')">Top</button>
+                <button onclick="toTop('BASE')">TOP</button>
+            </div> -->
+
         </div>
+
+
+        
+        
+
+
     </div>
 
-
-    <a class="btn btn-primary btn-test" style="display:none;">Test</a>
-</div>
+  
 
 
 
 <script>
 
    
+    var _deviceId = 0;
 
     function getFiles()
     {
@@ -74,25 +165,14 @@
 
             
         }
-        if (dateNowIdx != null) {
-            startBlinkingRow(0);
-        }
+         
         
     }
 
 
-    function getCurrentStatus(userId)
-    {
-        var fdata = new FormData();
-        fdata.append("Action", "GetList");
-        fdata.append("UserId", userId);
-        fdata.append("Table", "Status");
+    
 
-        fetch("./api/generic.php", { method:"post", body:fdata })
-            .then(res => res.json())
-            .then(data => onGetCurrentStatus(data)); 
-    }
-
+    
     function onGetCurrentStatus(data)
     {
         console.log(data);
@@ -100,9 +180,26 @@
         var list = data.List;
  
         if (list.length == 1) {
+ 
+
 
             var side = list[0].Side;
+            var timestamp = list[0].Timestamp;
 
+            var elapedTimeMs = new Date() - new Date(timestamp);
+
+            var elapedTimeSec = Math.floor(elapedTimeMs / 1000);
+            var elapedTimeMin = Math.floor(elapedTimeSec / 60);
+
+            if (elapedTimeMin > 1) {
+                $(".card-header h2").text("Status - No connection");
+            }
+            else {
+                $(".card-header h2").text("Status - " + side);
+            }
+
+            toTop(side);
+           
             // bar
             $(".bar-graph").children().find('.bar-fill').removeClass('bg-success');
             $(".bar-graph").children().eq(side).find('.bar-fill').addClass('bg-success');
@@ -115,7 +212,7 @@
     }
 
     $(document).ready(function() {
-
+ 
         $(".link-home").show();
  
         $('[data-toggle="tooltip"]').tooltip({html: true});
@@ -132,17 +229,24 @@
         getFile(curFile);
 
         // get status
+
+        _deviceId = localStorage["DeviceId"];
          
 
         // continous refresh
         
         setInterval(function() {
 
-            getFile(curFile);
-            getCurrentStatus(0);
+            //getFile(curFile);
+            getCurrentStatus(_deviceId, onGetCurrentStatus);
+
 
             //console.log("datr");
         }, 1000);
+
+
+        
+        getTasks(_deviceId);
         
         
     });
@@ -158,6 +262,7 @@
 
     function getFile(filename)
     {
+        console.log(filename);
         fetch("./api/statistic.php?Action=GetDailyStats&UserId=0&FileStats=" + filename)
             .then(res => res.json())
             .then(data => onGetDailyStats(data));
@@ -171,23 +276,104 @@
         
     }
 
-    $(".btn-test").on('click', function() {
-
-        var fdata = new FormData();
-        fdata.append("Action", "UpdateStatus");
-        fdata.append("UserId", 0);
-        fdata.append("Side", 0);
-        
-        fetch("./api/status.php", { method:"post", body:fdata })
-            .then(res => res.json())
-            .then(data => onUpdateStatus(data));
-    });
-    
-    function onUpdateStatus(data)
+    function getTasks(deviceId)
     {
-         
-        console.log(data);
+        var data = new FormData();
+        data.append("Action", "GetList");
+        data.append("Table", "Tasks");
+        data.append("DeviceId", deviceId);
+        fetch("./api/generic.php", { method:"post", body:data })
+            .then(res => res.json())
+            .then(data => onGetTasks(data, deviceId));
     }
+
+    function onGetTasks(data, deviceId)
+    {
+        console.log(data);
+ 
+        if (data.List.length > 0) {
+            var tasks = JSON.parse(data.List[0].Content);
+            console.log(tasks);
+            for(var i = 0; i < tasks.length; i++) {
+                var taskName = tasks[i].Name;
+                var taskType = tasks[i].Type;
+                var taskSide = tasks[i].Side;
+                console.log(taskName, taskType, taskSide);
+
+                if (taskSide == "FRONT") {
+                    $(".face.front").html(`${taskName} <br> ${taskType}`);
+                }
+                else if (taskSide == "BACK") {
+                    $(".face.back").html(`${taskName} <br> ${taskType}`);
+                }
+                else if (taskSide == "RIGHT") {
+                    $(".face.right").html(`${taskName} <br> ${taskType}`);
+                }
+                else if (taskSide == "LEFT") {
+                    $(".face.left").html(`${taskName} <br> ${taskType}`);
+                }
+                else if (taskSide == "TOP") {
+                    $(".face.top").html(`${taskName} <br> ${taskType}`);
+                }
+                else if (taskSide == "BASE") {
+                    $(".face.bottom").html(`${taskName} <br> ${taskType}`);
+                }
+                else {
+                    console.error("Unknown side: " + taskSide);
+                }
+            }
+        }
+        
+ 
+        if (data.Error) {
+            console.error(data.Error);
+            return;
+        }
+    }
+
+
+        
+    function toTop(face)
+    {
+        const baseX = -30;
+        const baseY = 35;
+        const baseZ = 0;
+
+        let x = baseX;
+        let y = baseY;
+        let z = baseZ;
+
+        console.log(face);
+        switch(face){
+
+            case "FRONT":
+                x = 237; y = 180; z = 45;
+                break;
+
+            case "BACK":
+                x = 237; y = 0; z = 45;
+                break;
+
+            case "RIGHT":
+                x = -30; y = 293;z=266;
+                break;
+
+            case "LEFT":
+                x = -30; y = 128;z=85;
+                break;
+
+            case "TOP":
+                x = -30; y = 35;
+                break;
+
+            case "BASE":
+                x = 148; y = 35;
+                break;
+        }
+
+        cube.style.transform = `rotateX(${x}deg) rotateY(${y}deg) rotateZ(${z}deg)`;
+    }
+    
  
     
          

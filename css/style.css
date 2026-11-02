@@ -1,13 +1,61 @@
 
+
+
 .mainBackground
 {
-     
+/*     
     background-image:  url(".././imgs/back-redblue.jpg");
     background-repeat: no-repeat;
     background-size: cover;
 
     
     transition: background-position 2s ease;
+*/
+
+    margin: 0;
+    background: rgb(48, 109, 153);
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-feature-settings: "liga";
+    -webkit-transition: background-color 3s linear;
+    -moz-transition: background-color 3s linear;
+    -ms-transition: background-color 3s linear;
+    transition: background-color 3s linear;
+}
+
+.viewConfigure 
+{
+    /* background-image:  url("/cube365/imgs/desktop.jpg"); */
+    /* background-size: cover; */
+
+    
+    --u:  1.25vmin;	
+    --c1: #83b0e3;
+    --c2: #6c91bb;
+    --c3: #4d6887;
+    --gp: 50%/calc(var(--u) * 5) calc(var(--u) * 10);
+    --bp: calc(var(--u) * -2.5) calc(var(--u) * -5);
+    /* height: 100vh;  */
+    height: auto;
+    --bg: 
+        radial-gradient(circle at 50% 25%, var(--c2)  15%, #fff0 30% 100%) var(--gp),
+        conic-gradient(from 270deg at 34% 46%, var(--c2) 0 12.5%, #fff0 0 100%) var(--gp),
+        conic-gradient(from 45deg at 66% 46%, var(--c2) 0 12.5%, #fff0 0 100%) var(--gp),
+        conic-gradient(from 180deg at 50% 80%, var(--c2) 0 12.5%, #fff0 0 100%) var(--gp),
+        conic-gradient(from 135deg at 50% 80%, var(--c2) 0 12.5%, #fff0 0 100%) var(--gp),
+        conic-gradient(from 0deg at 0% 20%, var(--c2) 0 12.5%, #fff0 0 100%) var(--gp),
+        conic-gradient(from -45deg at 100% 20%, var(--c2) 0 12.5%, #fff0 0 100%) var(--gp),
+        linear-gradient(180deg, var(--c2) 0 4.5%, #fff0 0 45.25%, var(--c2) 0 50%, #fff0 0% 100%) var(--gp),
+        radial-gradient(circle at 50% 25%, #fff0 0 25%, var(--c2) 26% 32%, #fff0 0 100%) var(--gp),
+        linear-gradient(165deg, var(--c3) 15%, var(--c1) 44%, #fff0 0 100%) var(--gp),
+        linear-gradient(180deg, var(--c1) 50%, #fff0 0 100%) var(--gp);
+    background: 
+        var(--bg), 
+        var(--bg);
+    background-position: 
+        var(--bp), var(--bp), var(--bp), var(--bp), var(--bp), var(--bp), var(--bp), var(--bp), var(--bp), var(--bp), var(--bp), 
+        0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+
 }
 
 .mainBackgroundMove {
@@ -27,46 +75,10 @@
 
  
 
-.desktopBackground
-{
-    background-image: url("/cube365/imgs/desktop.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
-}
+ 
 
-
-.boardBackground
-{
-    background-image: url("/cube365/imgs/bacheca.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
-    color: '';
-}
-
-.rulesBackground
-{
-    background-image: 'none' !important;
-    /* background-color: #007BFF; */
-    background-color: white;
-    background-size: cover;
-    color: black;
-}
-
-.scoreBackground
-{
-    background-image: 'none' !important;
-    background-color: white;
-    background-size: '';
-     
-}
-
-.sponsorBackground
-{
-    background-image: 'none' !important;
-    background-size: contain;
-    
-}
-
+ 
+ 
 @keyframes bar-fill {
     0% {
       width: 0;

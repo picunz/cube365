@@ -1,10 +1,9 @@
  
- 
   
   
            
-<div class="container-fluid" style="height:12vh;">
-    <ul class="col navbar-nav">
+<div class="container-fluid position-relative" style="min-height:12vh;">
+    <ul class="navbar-nav position-absolute" style="left:0; top:0.5rem;">
         <li class="nav-item"> 
             <a class="nav-link" id="menu-link" data-lte-toggle___="sidebar___" href="#" role="button"> 
                 <i class="bi bi-list text-white"></i> 
@@ -12,42 +11,26 @@
         </li>
     </ul>
 
-    <ul class="col navbar-nav">
-        <!-- 
-        <li class="nav-item d-none d-md-block"> <a href="#" class="nav-link">Home3</a> </li>
-        <li class="nav-item d-none d-md-block"> <a href="#" class="nav-link">Contact2</a> </li>
-         -->
-        <li class="nav-item mx-auto"> 
-            <img src="adminlte/helpers/imgs/cube365_logo.png" alt="Cube Logo" class="brand-image">
-        </li>    
-        
-    </ul>
-    <ul class="col navbar-nav">
-         
-        <li class="nav-item ms-auto link-notification" style="cursor:pointer;display:none;"> 
-            <i class="fa fa-xl fa-bell text-white"></i> 
-        </li>
+    <div class="d-flex flex-column align-items-center justify-content-center w-100 text-center" style="min-height:12vh;">
+        <div class="mb-2">
+            <img src="adminlte/helpers/imgs/cube.png" alt="Cube Logo" style="width:70px;" class="brand-image">
+        </div>
 
-        <li class="nav-item ms-auto link-home" style="display:none;cursor:pointer;"> 
-            <i class="fa fa-xl fa-home text-white"></i> 
-        </li>
-
-        <!--
-        <li class="nav-item ms-auto"> 
-            <div class="form-check form-switch nav-link">
-                <input class="form-check-input" type="checkbox" value="dark" id="darkswitch">
+        <nav class="m-2 overflow-x-auto custom-scrollbar mx-auto" style="max-width:100%;" aria-label="Component categories">
+            <div id="tab-list" class="flex gap-2 p-2 rounded-2xl mx-auto w-fit min-w-max neu-inset" role="tablist" aria-orientation="horizontal">
+                <button type="button" role="tab" id="Tab-reports" aria-selected="true" aria-controls="panel-basics" tabindex="0" class="tab-btn neu-focus px-6 py-3 rounded-xl text-sm font-medium transition-all" data-tab="basics">
+                    Reports
+                </button>
+                <button type="button" role="tab" id="Tab-tasks" aria-selected="false" aria-controls="panel-forms" tabindex="-1" class="tab-btn neu-focus px-6 py-3 rounded-xl text-sm font-medium transition-all" data-tab="forms">
+                    Tasks
+                </button>
+                <button type="button" role="tab" id="Tab-settings" aria-selected="false" aria-controls="panel-forms" tabindex="-1" class="tab-btn neu-focus px-6 py-3 rounded-xl text-sm font-medium transition-all" data-tab="forms">
+                    Settings
+                </button>
+                
             </div>
-        </li>
-        -->    
-        <!--
-        <li class="nav-item"> 
-            <a class="nav-link text-white" href="#" data-lte-toggle="fullscreen"> 
-            <i data-lte-icon="maximize" class="bi bi-arrows-fullscreen"></i> 
-            <i data-lte-icon="minimize" class="bi bi-fullscreen-exit" style="display: none;"></i> 
-            </a> 
-        </li>
-        -->
-    </ul>
+        </nav>
+    </div>
 </div>
 <!-- 
 
@@ -89,11 +72,44 @@
              sidebarOpen();
         }
     });
-
+ 
+   
 
     $(document).ready(function() {
         console.log("navbar.php ready()");
     });
+
+
  
+    $(document).on('click', '#Tab-reports', function() {
+
+        $(this).attr('aria-selected', 'true').attr('tabindex', '0');
+
+        $('#Tab-settings').attr('aria-selected', 'false').attr('tabindex', '-1');
+        $('#Tab-tasks').attr('aria-selected', 'false').attr('tabindex', '-1');
+        
+        $(".app-main").load("./viewArchive.html");
+    });
+
+    $(document).on('click', '#Tab-settings', function() {
+
+        $(this).attr('aria-selected', 'true').attr('tabindex', '0');
+
+        $('#Tab-reports').attr('aria-selected', 'false').attr('tabindex', '-1');
+        $('#Tab-tasks').attr('aria-selected', 'false').attr('tabindex', '-1');
+     
+     
+        $(".app-main").load("./viewConfigure.html");
+    });
+
+    $(document).on('click', '#Tab-tasks', function() {
+
+        $(this).attr('aria-selected', 'true').attr('tabindex', '0');
+
+        $('#Tab-reports').attr('aria-selected', 'false').attr('tabindex', '-1');
+        $('#Tab-settings').attr('aria-selected', 'false').attr('tabindex', '-1');
+     
+        $(".app-main").load("./viewHistoryTasks.html");
+    });
 
 </script>

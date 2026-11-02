@@ -46,12 +46,13 @@
                                 <p>Profilo</p>
                             </a>
                         </li>
+                        <!--
                         <li class="nav-item"> 
                             <a id="notifications" href="#" class="nav-link"> <i class="nav-icon bi bi-calendar-check text-white"></i>
                                 <p>Notifiche</p>
                             </a>
                         </li>
-
+-->
                         <li class="nav-item"> 
                             <a id="status" href="#" class="nav-link"> <i class="nav-icon bi bi-box-fill text-white"></i>
                                 <p>Stato</p>
@@ -84,13 +85,13 @@
 
                     $(".app-main").load("./viewProfile.html"); 
                 });
-
+/*
                 $("#notifications").on('click', function () {
 
                     sidebarCollapse();
                     $(".app-main").load("./viewNotifications.html");
                 });
-
+*/
                 $("#status").on('click', function () {
 
                     sidebarCollapse();
@@ -98,7 +99,6 @@
                 });
 
                 $("#settings").on('click', function () {
-
                     sidebarCollapse();
                     $(".app-main").load("./viewSettings.html");
                 });

@@ -339,6 +339,7 @@ if(isset($_POST['Action']))
     //$exists = $stmt->rowCount() > 0;
     $exists = $stmt->fetchColumn();
 
+ 
     $result = array('Action' => $Action, 
                     'Table' => $table, 
                     'Driver' => $driver,

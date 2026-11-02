@@ -138,23 +138,7 @@ function onLogExternalFile(data)
     }
 }
 
-function setGoogleMapsLinkToCtrl(ctrl, address)
-{
-    ctrl.attr("href", "http://maps.google.com/?q=" + address);
-    ctrl.attr("target", "_blank");
-}
-
-
-
-function createGUID() 
-{
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
-        .replace(/[xy]/g, function (c) {
-            const r = Math.random() * 16 | 0,
-                v = c == 'x' ? r : (r & 0x3 | 0x8);
-            return v.toString(16);
-        });   
-}
+  
 
 function ConvertTime2HM(time)
 {
@@ -162,28 +146,7 @@ function ConvertTime2HM(time)
     return timeHM;
 }
 
-function showHelp()
-{  
-    $(".card-help").show();
-
-    $(".card-help").animate({top:'50px'}, 'slow', function() {
-        //$(this).animate({width:'1000px', height:'300px'}, 'slow');
-        $(this).animate({width:'1000px', height:'auto'}, 'slow');
-    });
-}
-  
-function closeHelp(obj)
-{  
-    var card = $(obj).closest('.card');
-
-    card.animate({top:'0px'}, 'fast', function() {
-
-        card.animate({width:'100px', height:'100px'}, 'fast', function() {
-        card.hide();
-        location.reload();
-        });
-    }); 
-}
+ 
  
 
 function getLocalUserName()
@@ -191,17 +154,7 @@ function getLocalUserName()
     return localStorage["techName"] + " " + localStorage["techSurname"];
 }
 
-function ChangeFileExtension(filename, ext)
-{
-    return filename.substr(0, filename.lastIndexOf(".")) + ext;
-}
-
-function GetFileExtension(filename)
-{
-    return filename.split('.').pop();
-}
-  
-  
+ 
 
 function DownloadByUrl(url) 
 {
@@ -235,28 +188,7 @@ function getElapsedSeconds()
 }
 
 
-/******************** sales ***************/
-
-function loadScript(url)
-{
-    return new Promise((resolve,reject) => {
-
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src = url;
-    script.async = false;
-    document.head.appendChild(script);
-
-    script.onload = function () {
-        resolve("onLoadScript " + url); 
-    };
-
-    script.onerror = function () {
-        console.error("onLoadScript " + url);
-        reject("error")
-    };
-    });
-}
+ 
 
 //***  Logs ***/
 
@@ -361,24 +293,25 @@ function showDailyStats(data)
         var objFace = createInputTask(0, jData, item.Side, totalSecs);
         barGraph.append(objFace);
     });
-/*
-    var objL = createInputTask(0, jData, 'LEFT',  totalSecs);
-    barGraph.append(objL);
 
-    var objR = createInputTask(1, jData, 'RIGHT', totalSecs);
-    barGraph.append(objR);
-
-    var objF = createInputTask(2, jData, 'FRONT', totalSecs);
-    barGraph.append(objF);
-
-    var objB = createInputTask(3, jData, 'BACK', totalSecs);
-    barGraph.append(objB);
-
-    var objT = createInputTask(5, jData, 'BASE', totalSecs);
-    barGraph.append(objT);
-
-    var objO = createInputTask(4, jData, 'TOP', totalSecs);
-    barGraph.append(objO);
-*/
     return barGraph;
+}
+
+function getCurrentStatus(deviceId, onGetCurrentStatusCallback)
+{
+    var fdata = new FormData();
+    fdata.append("Action", "GetList");
+    fdata.append("DeviceId", deviceId);
+    fdata.append("Table", "Status");
+
+    
+    fetch("./api/generic.php", { method:"post", body:fdata })
+        .then(res => res.json())
+        .then(data => {
+                
+            if (onGetCurrentStatusCallback) {
+                onGetCurrentStatusCallback(data);
+            }
+        }); 
+        
 }

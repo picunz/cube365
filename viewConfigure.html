@@ -1,106 +1,160 @@
-<head>
-    <link rel="stylesheet" href="css/neuromorphic.css">
-</head>
+ 
 
 <style>
 
-    body {
+  /*   body {
         color: #ccc;
         background: #080808;
         font-family: 'Century Gothic';
+    } */
+
+    @import url("https://fonts.googleapis.com/css2?family=Raleway&display=swap");
+    html {
+        height: 100%;
+        background: linear-gradient(241.99deg, rgba(192, 218, 237, 0.25) 0%, rgba(207, 211, 255, 0.25) 100%);
     }
 
-   
-    .container-video {
-        position: relative;
-        width: 100%; /* La larghezza si adatta al contenitore */
-        padding-top: 56.25%; /* Mantiene un rapporto 16:9 */
-        overflow: hidden;
+    .container {
+        width: 40%;
+        display: grid;
+        place-items: center;
+        border-radius: 25px;
+        background-color: #ecf0f3;
+        /* box-shadow: 13px 13px 20px #cbced1, -13px -13px 20px #ffffff;  */
+    }
+     
+    .container .formHeader {
+        margin: 10px 10px;
+        opacity: 0.5;
+        font-family: "Raleway", sans-serif;
+    }
+    .container .formWrapper {
+        width: 80%;
+        display: flex;
+        flex-direction: column;
+    }
+    .container form {
+        display: flex;
+        flex-direction: column;
+    }
+    .container form input, .container form select, .container form select label {
+        font: italic 14px "Raleway", sans-serif;
+        margin: 10px 10px;
+        padding: 20px 20px;
+        border: none;
+        background: none;
+        color: #555;
+        border-radius: 10px;
+        box-shadow: inset 8px 8px 8px #cbced1, inset -8px -8px 8px #ffffff;
+    }
+    .container form input:focus {
+        outline: none;
+    }
+    .container .formFooter {
+        margin: 20px 10px;
+    }
+    .container .formFooter .submitButton, .textonly {
+        text-transform: uppercase;
+        font-weight: bold;
+        padding: 10px 5px;
+        padding-top: 15px;
+        border: none;
+        color: #AFAFAF;
+        transition: ease-in-out 0.5s;
+        border-bottom: 1px ridge rgba(0, 0, 0, 0);
+        cursor: pointer;
+    }
+    .container .formFooter .submitButton:hover {
+        color: #6F9EB8;
+        transition: ease-in-out 0.5s;
+        border-bottom: 1px ridge #6F9EB8;
     }
 
-    .container-video video,
-    .container-video canvas {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%; /* Il video e il canvas occupano tutta la larghezza */
-        height: 100%; /* Adatta l'altezza mantenendo le proporzioni */
-        object-fit: cover; /* Copre l'area disponibile */
+    .modal-body {
+        background-color:#ecf0f3
     }
+    
 
-    .form-floating > label {
-        z-index: 30;
-    }
-
-    #map {
-        border-radius: 6px;
-        /* border: 2px solid red; */
-        transition: height 0.5s ease;
-    }
-
-    .viewConfigure 
-    {
-        background-image:  url("/cube365/imgs/desktop.jpg");
-        background-size: cover;
-    }
+    
 
 </style>
 
+ 
 
-<div>
-    <a class="btn btn-success" id="TestDb">Test DB lite</a>
-</div>
-
-<div class="p-4 viewConfigure">
+<div class="p-4">
     <div>
+        
+        <div class="row">
+            <div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newTaskModal">Add task</button>
+            </div>
+        </div>
+
         <div>
             <div id="listTask"></div>
         </div>
 
-        <div class="card m-2" style="border:6px solid black;border-radius:8px;">
-            <div class="card-header">
-                <h2 class="text-center text-dark">New Task</h2>
-            </div>
-
-            <div class="form-floating m-2 ">
-                <select class="form-select" id="floatingSelectSide">
-                <option selected>-</option>
-                <option value="LEFT">LEFT</option>
-                <option value="RIGHT">RIGHT</option>
-                <option value="FRONT">FRONT</option>
-                <option value="TOP">TOP</option>
-                <option value="BACK">BACK</option>
-                <option value="BASE">BASE</option>
-                </select>
-                <label for="floatingSelectSide" class="text-success">Side</label>
-            </div>
-
-            <div class="row">
-                <div class="col form-floating m-2">
-                    <input class="form-control" placeholder="Insert task" id="NewTask">
-                    <label class="text-success mx-2" for="NewTask">Task</label> 
-                </div>
-            </div>
-            <div class="row">
-                <div class="col form-floating m-2">
-                    <input class="form-control" placeholder="Insert task" id="NewType">
-                    <label class="text-success mx-2" for="NewType">Type</label> 
-                </div>
-            </div>
-
-
-            <a class="btn btn-success btn-sendtask m-2">Create task</a>
-        </div>
+      
     </div>
 
-    
-    
+</div>
+
+<div class="modal fade" id="newTaskModal" tabindex="-1" aria-labelledby="newTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="newTaskModalLabel">New Task</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="container" style="width:100%;">
+                    <div class="formWrapper">
+                        <form>
+                            <label for="floatingSelectSide" class="">Side</label>
+
+                            <select class="form-select" id="floatingSelectSide">
+                                <option selected="" style="display: block;">-</option>
+                                <option class="text-warning" value="LEFT" style="display: none;">LEFT</option>
+                                <option class="text-primary" value="RIGHT" style="display: none;">RIGHT</option>
+                                <option class="text-danger" value="FRONT" style="display: none;">FRONT</option>
+                                <option class="text-dark" value="TOP" style="display: block;">TOP</option>
+                                <option class="text-success" value="BACK" style="display: none;">BACK</option>
+                                <option class="text-light" value="BASE" style="display: block;">BASE</option>
+                            </select>
+                            
+                    
+
+                            <label for="NewType" class="">Type</label>
+                            <input placeholder="Type" id="NewType" />
+
+                            <label for="NewTask" class="">Task</label>
+                            <input placeholder="Task" id="NewTask" />
+
+                        </form>
+                    </div>
+
+                    <div class="formFooter">
+                        <button type="button" class="submitButton btn-newtask">submit form</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
  
  
 
 <script>
 
+    var ColorClassDictionary = {
+        "LEFT": "btn-warning",
+        "RIGHT": "btn-primary",
+        "FRONT": "btn-danger",
+        "BACK": "btn-success",
+        "BASE": "btn-light",
+        "TOP": "btn-dark"
+    };
     
     function ConvertToIsoDate(date) // not used
     {
@@ -119,11 +173,23 @@
         return d + "T" + t;
     }
 
+    function closeNewTaskModal()
+    {
+        var modalElement = document.getElementById('newTaskModal');
+        if (!modalElement || !window.bootstrap) {
+            return;
+        }
+
+        var modalInstance = bootstrap.Modal.getInstance(modalElement);
+        if (modalInstance) {
+            modalInstance.hide();
+        }
+    }
+
     function updateSelectSide()
     {
         $('#floatingSelectSide option').css('display', 'block');
 
-        
 
         $('#floatingSelectSide option').each(function() {
 
@@ -131,7 +197,7 @@
                 var side = $(this).val();
                 var self = $(this);
                 $("#listTask").children().each(function() {
-                    taskSide = $(this).find('.side').text();
+                    taskSide = $(this).find('.tside').text();
                     if (taskSide == side) {
                         self.css('display', 'none');
                     }
@@ -165,17 +231,61 @@
             return;
         }
 
-        const createInputTask = (id, deviceId, label, value, category) => {
+        
+
+        const createInputTask = (id, deviceId, side, name, type) => {
+            
+            var inputReadonly = "";
+            var hideActions = "";
+ 
+            className = ColorClassDictionary[side];
+
+            
+            if (side == "TOP") {
+                 
+                inputReadonly = "readonly";
+                hideActions = "display:none;";
+            }
+
             return `
-                    
-                <div contenteditable="true" class="form-control m-2 " style="border: 6px solid #03a96a; padding: 10px; min-height: 100px;">
-                    <i class="fa fa-trash mx-2 text-danger icon-delete" deviceId = "${deviceId}" style="float:right;cursor:pointer;"></i>
-                    <i class="fa fa-check text-success icon-save" style="float:right;cursor:pointer;"></i>
-                    <i class="side fa" style="color: gray;">${label}</i>
-                    <br>
-                    <span class="">${value}</span>
-                    <br>
-                    <i style="bottom: 15px;position: relative;float: right;"> ${category} </i>
+                <div class="container m-3" style="width:100%;max-width: 100%;" side="${side}">
+                    <div class="formWrapper">
+                        <form style="display:block;">
+                            <div class="row my-1" deviceId="${deviceId}">
+                                <div class="col-1">
+                                    <label class="">Side</label>
+                                    <br>
+                                    <div class="btn ${className} tside rounded-circle my-3" style="width: 50%;height: 50%;font-size: 10px; align-content:center;">${side}</div>
+                                    <!--<div class="textonly tside" style="width:100%;">${side}</div>-->
+                                </div>
+                                <div class="col-4">
+                                    <label class="">Type</label>
+                                    <br>
+                                    <input ${inputReadonly} class="ttype" style="width:100%;" placeholder="Type" value="${type}" />
+                                </div>
+
+                                <div class="col-4">
+                                    <label class="">Task</label>
+                                    <br>
+                                    <input ${inputReadonly} class="tname" style="width:100%;" placeholder="Task" value="${name}" />
+                                </div>
+
+                                <div class="col-3 d-flex flex-column align-items-end">
+                                    <div style="${hideActions}">
+                                        <label class=""></label>
+                                        <br>
+                                        <button type="button" class="btn btn-success btn-updatetask my-3">save</button>
+                                        <button type="button" class="btn btn-danger btn-deletetask my-3">delete</button>
+                                    </div>
+                                    <div style="${side == "TOP" ? "display:block;" : "display:none;"}">
+                                        <label class=""></label>
+                                        <br>
+                                        <p class="text text-danger my-3">Recharge side</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             `;
         };
@@ -195,7 +305,18 @@
             alert("no task");
         }
 
+        // get jContent with side == top
+        // recharge base is top side
+        var rechargeBase = jContent.filter(task => task.Side == "TOP");
+
+        var obj = createInputTask(0, data.DeviceId, rechargeBase[0].Side, "-", "-");
+        $("#listTask").append(obj);
+
         for(var i = 0; i < len; i++) {
+
+            if (jContent[i].Side == "TOP") {
+                continue;
+            }
 
             var obj = createInputTask(i, data.DeviceId, jContent[i].Side, jContent[i].Name, jContent[i].Type);
             $("#listTask").append(obj);
@@ -213,29 +334,46 @@
 
         $("#btn-send").show();
 
-        $("#menu-link").hide();
+        // $("#menu-link").hide();
 
         $(".fa-bell").hide();
  
         resetMainClass();
-        $(".app-main").addClass('scoreBackground');
+
+        $(".app-main").addClass('viewConfigure');
 
         var deviceId = localStorage["DeviceId"];
         getTasks(deviceId);
   
-        $("[name='tabs']").on('change', function(){
-            if ($("#radio-1").prop('checked')) {
-                $(".app-main").load("./viewArchive.html");
-                
-            }
-            if ($("#radio-2").prop('checked')) {
-                $(".app-main").load("./viewConfigure.html");
-            }
-        })
+        
+        setInterval(function() {
+
+            getCurrentStatus(deviceId, onGetCurrentStatus);
+
+        }, 1000);
     });
 
-    $(".btn-sendtask").on('click', function (e) {
-        
+    
+    
+    function onGetCurrentStatus(data)
+    {
+        console.log(data);
+
+        var list = data.List;
+
+        $(".container[side]").css("box-shadow", "none");
+ 
+        if (list.length == 1) {
+ 
+            var side = list[0].Side;
+
+            $(".container[side='" + side + "']").css("box-shadow", "inset -1px -1px 6px 4px #212334");
+        }
+    }
+
+    $(".btn-newtask").on('click', function (e) {
+        e.preventDefault();
+         
         var side = $("#floatingSelectSide").val();
         if (side == "-") {
             alert("no side selected");
@@ -262,8 +400,7 @@
         task.Side = side;
         task.Name = name;
         task.Type = type;
-
-
+ 
         var fdata = new FormData();
         fdata.append("Action", "SendTask");
         fdata.append("DeviceId", localStorage["DeviceId"]);
@@ -271,16 +408,20 @@
           
         fetch("./api/statistic.php", { method:"post", body:fdata })
             .then(res => res.json())
-            .then(data => onSendTask(data)); 
+            .then(data => onNewTask(data)); 
     });
         
-    function onSendTask(data)
+    function onNewTask(data)
     {
         console.log(data);
+
+        showToastMessage("Added task", "success");
 
         $("#floatingSelectSide").val("-");
         $("#NewTask").val("");
         $("#NewType").val("");
+
+        closeNewTaskModal();
 
         updateSelectSide();
 
@@ -289,12 +430,45 @@
         //$(".btn-gettasks").click();
     }
 
-    
-    $(document).on('click', ".icon-delete", function (e) {
+    $(document).on('click', ".btn-updatetask", function (e) {
+          
+        var row = $(this).closest('.row');
+        var side = row.find('.tside').text();
+        var deviceId = row.attr("deviceId");
+
+        var task = {};
+        task.Side = side;
+        task.Name = row.find('.tname').val();
+        task.Type = row.find('.ttype').val();
+
+        var fdata = new FormData();
+        fdata.append("Action", "SendTask");
+        fdata.append("DeviceId", deviceId);
+        fdata.append("Task", JSON.stringify(task));
+
+        fetch("./api/statistic.php", { method: "POST", body: fdata})
+            .then(res => res.json())
+            .then(data => onUpdateTaskBySide(data));
             
-        var div = $(this).closest('div');
-        var side = div.find('.side').text();
-        var deviceId = $(this).attr("deviceId");
+    });
+
+    function onUpdateTaskBySide(data)
+    {
+        
+        console.log(data);
+
+        showToastMessage("Updated task", "success");
+
+        getTasks(data.DeviceId);
+        
+    }
+
+    
+    $(document).on('click', ".btn-deletetask", function (e) {
+            
+        var row = $(this).closest('.row');
+        var side = row.find('.tside').text();
+        var deviceId = row.attr("deviceId");
 
         fetch("./api/statistic.php?Action=DeleteTaskBySide&DeviceId=" + deviceId + "&Side=" + side)
             .then(res => res.json())

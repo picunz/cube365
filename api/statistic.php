@@ -99,7 +99,9 @@ if(isset($_POST['Action']))
         }
 
         // check activities
-        $sqlS = "SELECT * FROM $table WHERE Date='$currentDate'";
+        //$sqlS = "SELECT * FROM $table WHERE Date='$currentDate'";
+        $sqlS = "SELECT * FROM $tableA WHERE Date='$currentDate' AND DeviceId='$deviceId'";
+
         $queryresult = $conn->query($sqlS);
         
         $rows = $queryresult->fetchAll(PDO::FETCH_ASSOC);
@@ -109,24 +111,27 @@ if(isset($_POST['Action']))
         $jActivities = "";  
         if ($rowCount > 0)  // update
         {
-            $jActivities = json_decode($rows[0]["Activities"], true);
+            //$jActivities = json_decode($rows[0]["Activities"], true);
+            $jActivities = json_decode($rows[0]["Details"], true);
         }
         else // create
         {   
             $newDay = true;
             $jActivities = "[]"; 
 
+            /*
             $sqlI = "INSERT INTO $table (Date, Activities, LastUpdate, Created)";
             $sqlI .= " VALUES ('$currentDate', '$jActivities', '$now', '$now')";
             $resultI = $conn->query($sqlI);
             $jActivities = json_decode("[]", true);
+            */
 
-/*
+
             $sqlA = "INSERT INTO $tableA (Date, DeviceId, Details, LastUpdate, Created)";
             $sqlA .= " VALUES ('$currentDate', '$deviceId', '$jActivities', '$now', '$now')";
             $resultA = $conn->query($sqlA);
             $jActivities = json_decode("[]", true);
-            */
+            
         }
 
         $found = false;
@@ -167,10 +172,11 @@ if(isset($_POST['Action']))
         }
 
         $activities = json_encode($jActivities, JSON_PRETTY_PRINT);
-
+/*
+        // update Device_Id table
         $sqlU = "UPDATE $table SET Activities = '$activities', LastUpdate = '$now' WHERE Date='$currentDate'";
         $resultU = $conn->query($sqlU);
-
+*/
         // update Activities table
         $sqlUAct = "UPDATE $tableA SET Details = '$activities', LastUpdate = '$now' WHERE Date='$currentDate' AND DeviceId='$deviceId'";
         $resultUAct = $conn->query($sqlUAct);
@@ -206,7 +212,7 @@ if(isset($_POST['Action']))
                         'jActivities' => $jActivities,
                         'DeviceId' => $deviceId,
                         'rowDevicesCount' => $rowDevicesCount,
-                        'ResultUpdate' => $resultU,
+                        //'ResultUpdate' => $resultU,
                         'ResultUpdateState' => $retUs,
                         'RowTasks'=> $jTasks,
                         'NewDay' => $newDay,
@@ -231,8 +237,7 @@ if(isset($_POST['Action']))
         $deviceId = $_POST['DeviceId'];
         
          
-
-        $table = "Device_" . $deviceId;
+ 
     
         $sqlST = "SELECT * FROM Tasks WHERE DeviceId ='$deviceId'";
         $queryresult = $conn->query($sqlST);
@@ -440,7 +445,7 @@ if (isset($_GET['Action']) && isset($_GET['DeviceId']))
         $deviceId = $_GET['DeviceId'];
  
         $result = false;
-
+/*
         $driver = $conn->getAttribute(PDO::ATTR_DRIVER_NAME);
 
         // create table if not exists
@@ -464,16 +469,16 @@ if (isset($_GET['Action']) && isset($_GET['DeviceId']))
         } else {
             $result =  $conn->errorInfo();
         }
-
+*/
         // insert null task is not exists
         $sqlT = "INSERT IGNORE INTO Tasks (DeviceId, Content) VALUES ('$deviceId', '{}')";
-
+/*
         if ($conn->query($sqlT) === TRUE) {
             $resultTask = true;
         } else {
             $resultTask =  $conn->errorInfo();
         }
-
+*/
         
         // get tasks for this device
         $sqlGet = "SELECT *  FROM Tasks WHERE DeviceId = '$deviceId'";
@@ -496,7 +501,7 @@ if (isset($_GET['Action']) && isset($_GET['DeviceId']))
         $jresult = array('Action' => $Action,
                          'DeviceId' => $deviceId,
                          'ResultTable' => $result,
-                         'ResultTask' => $resultTask,
+                         //'ResultTask' => $resultTask,
                          'Tasks' => $jContent
                        //  'List' => $rows
                         );

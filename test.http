@@ -1,0 +1,36 @@
+
+@host = https://www.kiand.it
+@deviceId = 48CA43598F54
+@state = LEFT
+
+@updatetask = {"Side":"LEFT","Name":"Riunione-S3","Type":"RIUNIONE"}
+
+#### RegisterDevice
+GET {{host}}/cube365/api/statistic.php?Action=RegisterDevice&DeviceId={{deviceId}}
+ 
+
+#### UpdateState
+POST {{host}}/cube365/api/statistic.php
+Content-Type: application/x-www-form-urlencoded
+
+Action=UpdateState&DeviceId={{deviceId}}&State={{state}}
+
+### GetTasks
+POST {{host}}/cube365/api/statistic.php
+Content-Type: application/x-www-form-urlencoded 
+
+Action=GetTasks&DeviceId={{deviceId}}
+
+### SendTask
+POST {{host}}/cube365/api/statistic.php
+Content-Type: application/x-www-form-urlencoded
+
+Action=SendTask&DeviceId={{deviceId}}&Task={{updatetask}}
+
+
+### SendLog
+POST {{host}}/cube365/api/statistic.php
+Content-Type: application/x-www-form-urlencoded
+
+Action=SendLog&DeviceId={{deviceId}}&Level=INFO&Message=Test&Value=123
+

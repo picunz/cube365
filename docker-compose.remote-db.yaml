@@ -1,0 +1,35 @@
+# Docker-compose per usare SOLO DB remoto su Aruba (senza MySQL locale)
+# Uso: docker-compose -f docker-compose.remote-db.yaml up -d
+
+services:
+  app:
+    build: .
+    container_name: php-app
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      - APP_ENV=docker-remote  # Usa DB remoto Aruba
+  
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: 31.11.39.98  # DB Aruba
+      PMA_PORT: 3306
+      PMA_USER: Sql1669990
+      PMA_PASSWORD: 25fidenzaLF25!
+
+  sqlite-web:
+    image: coleifer/sqlite-web
+    container_name: sqlite-web
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./db:/data
+    environment:
+      - SQLITE_DATABASE=cube365.sqlite

@@ -135,7 +135,11 @@
 
 <div class="card card-danger card-profile card-outline">
     <div class="card-header text-danger text-center text-white">
-        <h5><span id="fullname"></span></h5>
+        <!--
+        <h5>
+            <span id="fullname"></span>
+        </h5>
+        -->
     </div>
     <main class="my-3" style="position:relative;">
          
@@ -160,6 +164,7 @@
         
     </main>    
 
+<!--
     <ul class="nav nav-tabs">
         <li class="nav-item">
             <a class="nav-link active" id="Race" style="cursor:pointer;">Gare</a>
@@ -171,7 +176,7 @@
             <a class="nav-link" id="Heat" style="cursor:pointer;">HeatMap</a>
         </li>
     </ul>
-
+-->
     <div id="Stats" class="my-2">
         <div class="row container raceTab gx-5 text-start" style="display:none;">
             
@@ -202,13 +207,7 @@
             <div id="italy-map" style="width: 600px; height: 400px"></div>
         </div>
     </div>
-
-    <div id="ShareFacebook">
-        <a class="btn btn-primary btn-screen-facebook m-3">
-            <i class="fab fa-facebook" ></i>&nbsp;Condividi su Facebook
-        </a>
-    </div>
-
+ 
 </div>    
    
 
@@ -304,7 +303,6 @@
         fdata.append("Action", "UploadImage");
         fdata.append('FileName', fileName);
         fdata.append("ImageData", dataImg);
-        debugger
         fetch("./api/upload.php", { method:"post", body:fdata })
             .then(res => res.json())
             .then(data => onUploadImageProfile(data));

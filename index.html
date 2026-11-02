@@ -9,13 +9,13 @@
     <title>Cube365</title>
     <link rel="shortcut icon" href="favicon.ico" type="image/png">
 
-    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png?v=1">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png?v=1">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png?v=1">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png?v=3">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png?v=3">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png?v=3">
     <link rel="manifest" href="webmanifest?v=1">
     <link rel="shortcut icon" href="favicon/favicon.ico">
     <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-config" content="favicon/browserconfig.xml?v=1">
+    <meta name="msapplication-config" content="favicon/browserconfig.xml?v=3">
     <meta name="theme-color" content="#ffffff">
 
     <meta name="format-detection" content="telephone=no">
@@ -51,10 +51,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.24.0/dist/bootstrap-table.min.css">  
 
 
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=1">
 
     
-
+    <link rel="stylesheet" href="css/neuromorphic.css?v=7">
   
     <!-- cropping -->
 
@@ -137,7 +137,8 @@
 
       
    
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>	
+    <!-- jQuery locale per Docker -->
+    <script src="js/jquery-3.6.0.min.js"></script>	
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script> 
     
 
@@ -146,7 +147,7 @@
     
     
     
-    <script src="js/utilities.js" ></script>
+    <script src="js/utilities.js?v=12" ></script>
 
     <!-- <script src="js/enum.js"></script>  -->
 
@@ -208,68 +209,6 @@
 
     <script>
 
-      $(document).ready(function() {
-        
-        console.log("index.html");
-
-        $("#version").text(AppVersion);
-
-      //  customLog();
-       
-
-        $("#adminlte-navbar").load("./adminlte/helpers/navbar.php?page='report'");
-        $("#adminlte-sidebar").load("./adminlte/helpers/sidebar.php");
-        
-         
-
-
-          let el = document.createElement('div');
-          document.body.appendChild(el);
-          eruda.init({
-            container: el,
-            tool: ['console', 'elements']
-          });  
-
-
-          init();
-
-            
-          var userId = localStorage["DeviceId"];
-          if  (userId == undefined) {
-            
-            
-          }
-           
-          
-
-        //});
-
-        console.log("addEventListener");
-        window.addEventListener("message", function(event) {
-          console.log("Originnnnnnnnn:", event.origin);
-             
-            console.log("Origin:", event.origin);
-            if (event.origin !== "https://sito-esterno.com") {
-                console.warn("Origine non autorizzata:", event.origin);
-                return;
-            }
-            console.log("Messaggio ricevuto:", event.data);
-            event.source.postMessage("Messaggio ricevuto con successo!", event.origin);
-        });
-
-      });
-
-      
-      var _sidebarActive = false;
-
-      // normally sidebar is close!
-      $("body").addClass("sidebar-collapse");
-      $("body").removeClass("sidebar-open");
-      
-      
-      
-      $(".app-main").load("./adminlte/helpers/loginPage.html");
-
       function init()
       {
         console.log('init index.html');
@@ -282,12 +221,14 @@
 
         // ionserire nel custom.js
         // disabled overlay
+        /*
         $(document).on('click', function (e) {
             if (!_sidebarActive) {
               console.log("sidebar disabled on click");
               $("body").removeClass('sidebar-open');
             }
         }); 
+        */
 
         window.addEventListener('resize', function (e) {             
           e.preventDefault();
@@ -319,33 +260,71 @@
         .then(() => {
             console.log('Sounds are ready');
         });
-
-        // *** notifications
-/*
-        getMyNotifications(localStorage["userId"], function(data) {
-
-          console.log(data);
-          
-          if(data.List.length > 0) {
-
-            
-            var hasNotifications = data.List.some(item => item.IsRead == 0);
-
-            if (hasNotifications)
-            {
-              $(".link-notification").show();
-              $(".link-notification").addClass('fa-beat');
-            }
-          }
-        });
-
-        $(document).on('click', '.link-notification', function() {
-          $(".app-main").load("viewNotifications.html");
-        });
-*/           
-
-        
+ 
       }
+
+      $(document).ready(function() {
+        
+        console.log("index.html");
+
+        $("#version").text(AppVersion);
+
+        //  customLog();
+       
+
+        $("#adminlte-navbar").load("./adminlte/helpers/navbar.php?page='report'");
+        $("#adminlte-sidebar").load("./adminlte/helpers/sidebar.php");
+        
+         
+
+
+        let el = document.createElement('div');
+        document.body.appendChild(el);
+        eruda.init({
+          container: el,
+          tool: ['console', 'elements']
+        });  
+ 
+        init();
+
+          
+        var userId = localStorage["DeviceId"];
+        if  (userId == undefined) {
+          
+          
+        }
+           
+          
+ 
+        console.log("addEventListener");
+        window.addEventListener("message", function(event) {
+          console.log("Originnnnnnnnn:", event.origin);
+             
+            console.log("Origin:", event.origin);
+            if (event.origin !== "https://sito-esterno.com") {
+                console.warn("Origine non autorizzata:", event.origin);
+                return;
+            }
+            console.log("Messaggio ricevuto:", event.data);
+            event.source.postMessage("Messaggio ricevuto con successo!", event.origin);
+        });
+
+        var _sidebarActive = false;
+
+        // normally sidebar is close!
+        $("body").addClass("sidebar-collapse");
+        $("body").removeClass("sidebar-open");
+        
+        
+        
+        $(".app-main").load("./adminlte/helpers/loginPage.html");
+
+      });
+
+      
+      
+
+      
 
   </script>
 

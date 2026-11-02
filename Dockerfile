@@ -18,6 +18,17 @@ RUN docker-php-ext-install gd
 
 RUN a2enmod rewrite
 
+
+
+# Installa Xdebug
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug
+
+# Aggiunge configurazione Xdebug
+COPY xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+
+
+
+
 WORKDIR /var/www/html
 
-COPY . /var/www/html

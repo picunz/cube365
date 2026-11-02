@@ -56,21 +56,31 @@
 
         function checkDeviceIsValid(deviceId)
         {
-            var data = new FormData();
-            data.append("Action", "CheckTableExists");
-            data.append("Table", "Device_" + deviceId);
-            fetch("./api/generic.php", { method:"post", body:data })
+             
+            /*
+            var dataF = new FormData();
+            dataF.append("Action", "CheckTableExists");
+            dataF.append("Table", "Device_" + deviceId);
+            fetch("./api/generic.php", { method:"post", body:dataF })
                 .then(res => res.json())
                 .then(data => onCheckDeviceIsValid(data, deviceId));
-
+            */    
+            var dataF = new FormData();
+            dataF.append("Action", "GetList");
+            dataF.append("Table", "Activities");
+            dataF.append("DeviceId", deviceId);
+            fetch("./api/generic.php", { method:"post", body:dataF })
+                .then(res => res.json())
+                .then(data => onCheckDeviceIsValid(data, deviceId));
                 
         }
 
         function onCheckDeviceIsValid(data, deviceId)
         {
+             
             console.log(data);
-               
-            if (!data.Result)
+                
+            if (data.List.length == 0)
             {
                 console.warn("Device not found");
 
@@ -94,9 +104,11 @@
         }
 
 
-        $(".btn-enter").on('click', function() {
+        $(document).on('click', '.btn-enter', function() {
 
+             
             let deviceId = $("#DeviceId").val();
+            
             
             if (deviceId.length==0) {
 

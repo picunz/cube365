@@ -21,3 +21,12 @@
     color:blue !important;
   } 
 */
+#adminlte-navbar {
+    box-sizing: border-box;
+    overflow-x: hidden;
+    padding: 0.5625rem;
+    /* min-height: 100vh; */
+    background: url(https://i.stack.imgur.com/PEnJm.png), radial-gradient(#49586b, #091521);
+    background-blend-mode: overlay;
+    font: 1em ubuntu mono, monospace;
+}

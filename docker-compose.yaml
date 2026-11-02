@@ -21,6 +21,12 @@ services:
       - "8080:80"
     volumes:
       - .:/var/www/html
+    environment:
+      # Modalità:
+      # - APP_ENV=docker           → MySQL container locale
+      # - APP_ENV=docker-remote    → MySQL remoto Aruba (no servizio db)
+      # - APP_ENV=production       → MySQL remoto Aruba
+      - APP_ENV=docker
     depends_on:
       - db
   

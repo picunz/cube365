@@ -1,6 +1,4 @@
-<head>
-    <link rel="stylesheet" href="css/neuromorphic.css">
-</head>
+ 
 
 <style>
 
@@ -62,8 +60,9 @@
 
 <div class="m-2" style="max-height: 100vh;">
  
-    
-    <div>
+    <a class="btn btn-primary btn-cube-emulator my-2">Cube emulator</a>
+
+    <div id="CubeEmulator" style="display:none;">
         <h1 class="text-white">Cube Emulator</h1>
         <div class="row">
             <a class="btn btn-success btn-send-face col-1 m-1" face="LEFT">LEFT</a>
@@ -77,7 +76,6 @@
             <a class="btn btn-primary btn-send-face col-1 m-1" face="MULTIPLE_SIDE">MULTIPLE_SIDE</a>
             <a class="btn btn-primary btn-send-face col-1 m-1" face="NO_SIDE">NO_SIDE</a>
         </div>
-        
     </div>
 
         
@@ -104,7 +102,8 @@
                 <th data-field="Date" data-sortable="true">Data</th>
                 <th data-field="Created" data-sortable="true">Creato il</th>
                 <th data-field="LastUpdate" data-sortable="true">Aggiornato il</th>
-                
+                <th data-field="CountTask" data-sortable="true"  data-formatter="formatActivityNumbers">Number of Activities</th>
+                <th data-field="CountTask" data-sortable="true"  data-formatter="formatPrincipalActivity">Principal Activity</th>
                 <th data-field="Actions" data-sortable="false" data-formatter="formatActions" data-cell-style="styleActions"></th>
             </tr>
         </thead>
@@ -113,6 +112,35 @@
     </table>
 
 <script>
+
+    function formatActivityNumbers(value, row, index) 
+    {
+         
+        var jActivity = JSON.parse(row.Details);
+        // discard NO_SIDE and MULTIPLE_SIDE
+        jActivity = jActivity.filter(task => task.Side !== "NO_SIDE" && task.Side !== "MULTIPLE_SIDE");
+
+        row.CountTask = jActivity.length;
+
+        return row.CountTask;
+    }
+
+    function formatPrincipalActivity(value, row, index) 
+    {
+        var jActivity = JSON.parse(row.Details);
+        // discard NO_SIDE and MULTIPLE_SIDE
+        jActivity = jActivity.filter(task => task.Side !== "NO_SIDE" && task.Side !== "MULTIPLE_SIDE");
+
+        // find the activity with more seconds
+        jActivity.sort((a, b) => b.CounterSec - a.CounterSec);
+         
+        if (jActivity.length > 0) {
+            return jActivity[0].Name;
+        }
+        else {
+            return "";
+        }
+    }
         
     function formatActions(value, row, index) 
     { 
@@ -121,16 +149,18 @@
 
     function detailFormatter(index, row) 
     {
-  
-        return showDailyStats(row.Activities);
+         return showDailyStats(row.Details);
     }
 
     
     function getActivities()
     {
+ 
+        
         var data = new FormData();
         data.append("Action", "GetList");
-        data.append("Table", "Device_" + localStorage["DeviceId"]);
+        data.append("DeviceId", localStorage["DeviceId"]);
+        data.append("Table", "Activities");
         fetch("./api/generic.php", { method:"post", body:data })
             .then(res => res.json())
             .then(data => onGetActivities(data));
@@ -143,12 +173,7 @@
         $('#maintable').bootstrapTable('removeAll');
         $('#maintable').bootstrapTable('append', data.List);
 
-       
-       /*
-        if (dateNowIdx != null) {
-            startBlinkingRow(0);
-        }
-            */
+   
     }
 
     $(document).ready(function() {
@@ -173,6 +198,7 @@
 
         getActivities();
 
+        /*
         $("[name='tabs']").on('change', function(){
             if ($("#radio-1").prop('checked')) {
                 $(".app-main").load("./viewArchive.html");
@@ -183,13 +209,20 @@
                
             }
         });
+        */
+        resetMainClass();
         $(".app-main").addClass('mainBackground');
          
 
-        $(".sidebar-overlay").trigger('click');
+        //$(".sidebar-overlay").trigger('click');
 
     });
 
+    $(document).on('click',".btn-cube-emulator", function(e) {
+
+        $("#CubeEmulator").show();
+    });
+    
      
     
 
@@ -232,16 +265,7 @@
 
     $(".fa-home").hide();
     
-/* 
-    $(".fa-home").on('click', function() {
  
-        $('#maintable').bootstrapTable('destroy');
-        $("#md").remove();
-    }); */
-
-
-    
-
      
 
     function startBlinkingRow(rowIndex) 
@@ -279,7 +303,7 @@
             if (data.Result)
             {
                 showToastMessage("Excel convertito", "success");
-
+ 
                 var outputPath = data.OutFilename;
        
                 DownloadByUrl(outputPath);
@@ -316,12 +340,13 @@
 
     $(document).on('click', '.btn-refresh-day', function() {
 
-         
+          
         var trDetail = $(this).closest('tr');
         var tr = trDetail.prev();
         var indexRow = tr.attr("data-index");
         var id = tr.attr("Id");
 
+        /*
         var fdata = new FormData();
         fdata.append("Action", "GetItem");
         fdata.append("Table", "Device_" + localStorage["DeviceId"]);
@@ -329,7 +354,15 @@
         fetch("./api/generic.php", { method:"post", body:fdata })
             .then(res => res.json())
             .then(data => onGetDayResult(data, indexRow));
-  
+        */
+
+        var fdata = new FormData();
+        fdata.append("Action", "GetItem");
+        fdata.append("Table", "Activities"); 
+        fdata.append("Id", id);
+        fetch("./api/generic.php", { method:"post", body:fdata })
+            .then(res => res.json())
+            .then(data => onGetDayResult(data, indexRow));
     });
     
     function onGetDayResult(data, indexRow)
@@ -347,12 +380,12 @@
         }
         ]); */
         
-        var activities = data.Item.Activities;
+        var activities = data.Item.Details;
 
         $('#maintable').bootstrapTable('updateRow', {
             index: indexRow,
             row: {
-                Activities: activities
+                Details: activities
             }
         });
 
